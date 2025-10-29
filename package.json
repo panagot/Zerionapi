@@ -5,11 +5,9 @@
   "main": "server.js",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "dev-mock": "concurrently \"npm run server-mock\" \"npm run client\"",
     "dev-pro": "concurrently \"npm run server-pro\" \"npm run client\"",
     "dev-hybrid": "concurrently \"npm run server-hybrid\" \"npm run client\"",
     "server": "nodemon server.js",
-    "server-mock": "nodemon server-mock.js",
     "server-pro": "nodemon server-professional.js",
     "server-hybrid": "nodemon server-hybrid.js",
     "client": "echo 'no client app'",

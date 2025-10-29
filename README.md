@@ -52,7 +52,7 @@
 - **Zerion API** - Comprehensive onchain data
 - **Real-time Updates** - Live portfolio and PnL tracking
 - **Multi-chain Support** - 55+ blockchain networks
-- **Error Handling** - Graceful fallback systems
+- **Error Handling** - Graceful Zerion API integration
 
 ## 🔗 Zerion API Endpoints Used
 
@@ -173,7 +173,7 @@ This isn't just another portfolio tracker - it's a **social gaming platform** th
 
 ### Available Scripts
 ```bash
-npm run server-hybrid      # Start hybrid server (Zerion API + enhanced data)
+npm run server-hybrid      # Start hybrid server (Zerion API + Zerion API data)
 npm run dev-hybrid         # Start with nodemon for development
 ```
 

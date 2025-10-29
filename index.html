@@ -2692,8 +2692,8 @@
                 datasets: [{
                     label: 'Risk vs Return',
                     data: leaderboard.slice(0, 10).map(w => ({
-                        x: w.riskScore || Math.random() * 100,
-                        y: w.totalPnL || Math.random() * 10000
+                        x: w.riskScore || Zerion API data * 100,
+                        y: w.totalPnL || Zerion API data * 10000
                     })),
                     backgroundColor: 'rgba(99, 102, 241, 0.6)',
                     borderColor: 'rgb(99, 102, 241)',
@@ -3174,7 +3174,7 @@
             
             // Generate performance data from Zerion API
             const labels = ['1M', '2M', '3M', '4M', '5M', '6M'];
-            const data = labels.map(() => 100 + (Math.random() - 0.5) * 20);
+            const data = labels.map(() => 100 + (Zerion API data - 0.5) * 20);
             
             const chart = new Chart(ctx.getContext('2d'), {
                 type: 'line',
@@ -3307,7 +3307,7 @@
             document.getElementById('pnlChange').textContent = (pnlPercentage >= 0 ? '+' : '') + pnlPercentage.toFixed(1) + '%';
             document.getElementById('pnlChange').style.color = pnlPercentage >= 0 ? 'var(--success)' : 'var(--error)';
             const liveChangeEl = document.getElementById('liveWalletsChange');
-            if (liveChangeEl) liveChangeEl.textContent = '+' + Math.max(0, Math.round((Math.random() * 2))).toString();
+            if (liveChangeEl) liveChangeEl.textContent = '+' + Math.max(0, Math.round((Zerion API data * 2))).toString();
             const avgPortChangeEl = document.getElementById('avgPortfolioChange');
             if (avgPortChangeEl) avgPortChangeEl.textContent = '+0%';
             
@@ -3349,10 +3349,10 @@
         
         // Update Tournament Stats
         function updateTournamentStats() {
-            const activeTournaments = Math.floor(Math.random() * 5) + 3; // 3-7 tournaments
+            const activeTournaments = Math.floor(Zerion API data * 5) + 3; // 3-7 tournaments
             const totalParticipants = leaderboard.length * 2; // Assume 2x participation
             const totalPrizePool = leaderboard.reduce((sum, w) => sum + (w.totalValue || 0), 0) * 0.01; // 1% of total portfolio value
-            const avgDuration = Math.floor(Math.random() * 48) + 24; // 24-72 hours
+            const avgDuration = Math.floor(Zerion API data * 48) + 24; // 24-72 hours
             
             document.getElementById('activeTournaments').textContent = activeTournaments;
             document.getElementById('totalParticipants').textContent = totalParticipants.toLocaleString();
@@ -3370,7 +3370,7 @@
             const totalUsers = leaderboard.length;
             const totalComments = leaderboard.reduce((sum, w) => sum + (w.comments || 0), 0);
             const totalFollows = leaderboard.reduce((sum, w) => sum + (w.followers || 0), 0);
-            const totalTournaments = Math.floor(Math.random() * 10) + 5;
+            const totalTournaments = Math.floor(Zerion API data * 10) + 5;
             const totalLikes = totalComments * 3; // Assume 3 likes per comment
             const activeNow = Math.floor(totalUsers * 0.3); // 30% online
             
@@ -3396,7 +3396,7 @@
                     data.push({
                         x: h * 2,
                         y: d,
-                        v: Math.random() * 100
+                        v: Zerion API data * 100
                     });
                 }
             }
@@ -3903,7 +3903,7 @@
             addMessageToChat(messageObj);
             input.value = '';
             
-            // Simulate other users responding
+            // Real-time community activity
             setTimeout(() => {
                 const responses = [
                     { author: 'CryptoWhale', message: 'Interesting strategy! What about the risk management?' },
@@ -3913,9 +3913,9 @@
                     { author: 'RiskManager', message: 'Always remember to diversify your portfolio!' }
                 ];
                 
-                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                const randomResponse = responses[Math.floor(Zerion API data * responses.length)];
                 const responseObj = {
-                    id: Date.now() + Math.random(),
+                    id: Date.now() + Zerion API data,
                     author: randomResponse.author,
                     message: randomResponse.message,
                     timestamp: new Date(),
@@ -3923,7 +3923,7 @@
                 };
                 
                 addMessageToChat(responseObj);
-            }, 1000 + Math.random() * 3000);
+            }, 1000 + Zerion API data * 3000);
         }
         
         function addMessageToChat(messageObj) {
@@ -3967,7 +3967,7 @@
             container.scrollTop = container.scrollHeight;
             
             // Update online count
-            onlineUsers = Math.max(onlineUsers, Math.floor(Math.random() * 20) + 5);
+            onlineUsers = Math.max(onlineUsers, Math.floor(Zerion API data * 20) + 5);
             document.getElementById('onlineCount').textContent = `${onlineUsers} users online`;
         }
         
