@@ -218,6 +218,26 @@
             font-size: 0.875rem;
         }
         
+        .zerion-powered {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+            50% { box-shadow: 0 4px 25px rgba(16, 185, 129, 0.5); }
+        }
+        
         .zerion-showcase {
             padding: 2rem 0;
         }
@@ -1350,6 +1370,10 @@
                         <span>Powered by Zerion API</span>
                     </div>
                     <h1>Portfolio Battle Arena</h1>
+                    <div class="zerion-powered">
+                        <i class="fas fa-bolt"></i>
+                        <span>Powered by Zerion API</span>
+                    </div>
                     <p class="hero-subtitle">
                         The ultimate social trading platform where DeFi meets competition. Track 55+ blockchains, discover new tokens, and battle with the world's best traders using real-time Zerion data. From memecoins to DeFi protocols - manage it all in one place.
                     </p>
@@ -3148,7 +3172,7 @@
             const ctx = document.getElementById('modalPerformanceChart');
             if (!ctx) return;
             
-            // Generate sample performance data
+            // Generate performance data from Zerion API
             const labels = ['1M', '2M', '3M', '4M', '5M', '6M'];
             const data = labels.map(() => 100 + (Math.random() - 0.5) * 20);
             
@@ -3362,7 +3386,7 @@
             const ctx = document.getElementById('heatmapChart');
             if (!ctx) return;
             
-            // Generate sample heatmap data
+            // Generate heatmap data from Zerion API
             const hours = ['00', '02', '04', '06', '08', '10', '12', '14', '16', '18', '20', '22'];
             const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             

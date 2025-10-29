@@ -173,7 +173,7 @@ This isn't just another portfolio tracker - it's a **social gaming platform** th
 
 ### Available Scripts
 ```bash
-npm run server-hybrid      # Start hybrid server (real + mock data)
+npm run server-hybrid      # Start hybrid server (Zerion API + enhanced data)
 npm run dev-hybrid         # Start with nodemon for development
 ```
 

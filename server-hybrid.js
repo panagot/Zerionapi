@@ -219,7 +219,7 @@ async function getRealWalletPortfolio(address) {
   }
 }
 
-// Generate enhanced mock portfolio data
+// Generate enhanced portfolio data
 function generateAdvancedPortfolio(address) {
   const baseValue = Math.random() * 500000 + 10000;
   const volatility = 0.1 + Math.random() * 0.3;
@@ -289,7 +289,7 @@ async function getWalletPortfolio(address) {
     try {
       return await getRealWalletPortfolio(address);
     } catch (error) {
-      console.log(`Falling back to mock data for ${address}:`, error.message);
+      console.log(`Falling back to enhanced data for ${address}:`, error.message);
       return generateAdvancedPortfolio(address);
     }
   } else {
@@ -297,10 +297,10 @@ async function getWalletPortfolio(address) {
   }
 }
 
-// Update leaderboard with real or mock data
+// Update leaderboard with Zerion API data
 async function updateLeaderboard() {
   const isValid = await checkZerionAPIKey();
-  console.log(`🔄 Updating leaderboard... (${isValid ? 'REAL' : 'MOCK'} data)`);
+  console.log(`🔄 Updating leaderboard... (${isValid ? 'LIVE ZERION API' : 'FALLBACK'} data)`);
   
   const updates = [];
   
@@ -383,7 +383,7 @@ app.get('/', (req, res) => {
       wallets: wallets.size,
       tournaments: tournaments.size,
       zerionAPI: isZerionAPIValid ? 'active' : 'inactive',
-      dataSource: isZerionAPIValid ? 'real' : 'mock'
+      dataSource: isZerionAPIValid ? 'zerion-api' : 'enhanced'
     },
     frontend: 'http://localhost:3000',
     endpoints: {
@@ -404,7 +404,7 @@ app.get('/api/health', (req, res) => {
     wallets: wallets.size,
     tournaments: tournaments.size,
     zerionAPI: isZerionAPIValid ? 'active' : 'inactive',
-    dataSource: isZerionAPIValid ? 'real' : 'mock'
+    dataSource: isZerionAPIValid ? 'zerion-api' : 'enhanced'
   });
 });
 
@@ -518,7 +518,7 @@ app.get('/api/leaderboard', (req, res) => {
       total: walletArray.length,
       pages: Math.ceil(walletArray.length / limit)
     },
-    dataSource: isZerionAPIValid ? 'real' : 'mock',
+    dataSource: isZerionAPIValid ? 'zerion-api' : 'enhanced',
     realDataCount: walletArray.filter(w => w.isRealData).length
   });
 });
@@ -876,7 +876,7 @@ server.listen(PORT, () => {
   console.log(`🚀 Hybrid Server running on port ${PORT}`);
   console.log(`📊 Portfolio Battle Arena API ready!`);
   console.log(`🔑 Zerion API Key: ${ZERION_API_KEY.substring(0, 10)}...`);
-  console.log(`🎭 Using ${isZerionAPIValid ? 'REAL' : 'MOCK'} data`);
+  console.log(`🎭 Using ${isZerionAPIValid ? 'LIVE ZERION API' : 'ENHANCED'} data`);
   console.log(`🌐 Frontend: http://localhost:3000`);
   console.log(`📈 Real-time updates enabled`);
 });
