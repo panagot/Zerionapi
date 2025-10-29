@@ -807,7 +807,7 @@ app.use('*', (req, res) => {
   });
 });
 
-// Add some known addresses for demo
+// Add real, well-known addresses for live Zerion API data
 const knownAddresses = [
   { address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2', name: 'MakerDAO', description: 'DeFi Protocol - MakerDAO' },
   { address: '0x3cd751e6b0078be393132286c442345e5dc49699', name: 'Compound Finance', description: 'DeFi Protocol - Compound' },
@@ -815,10 +815,10 @@ const knownAddresses = [
   { address: '0x514910771af9ca656af840dff83e8264ecf986ca', name: 'Chainlink', description: 'Oracle Network - Chainlink' },
   { address: '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0', name: 'Polygon', description: 'Layer 2 - Polygon' },
   { address: '0x6b175474e89094c44da98b954eedeac495271d0f', name: 'Dai Stablecoin', description: 'Stablecoin - Dai' },
-  { address: '0xa0b86a33e6c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0', name: 'CryptoWhale', description: 'Professional Trader' },
-  { address: '0xb1b86a33e6c0c0c0c0c0c0c0c0c0c0c0c0c0c0c1', name: 'DeFiMaster', description: 'DeFi Specialist' },
-  { address: '0xc1c86a33e6c0c0c0c0c0c0c0c0c0c0c0c0c0c0c2', name: 'YieldFarmer', description: 'Yield Farming Expert' },
-  { address: '0xd1d86a33e6c0c0c0c0c0c0c0c0c0c0c0c0c0c0c3', name: 'RiskManager', description: 'Risk Management Pro' }
+  { address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', name: 'Vitalik Buterin', description: 'Ethereum Founder' },
+  { address: '0x28C6c06298d514Db089934071355E5743bf21d60', name: 'Binance Hot Wallet', description: 'Binance Exchange' },
+  { address: '0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503', name: 'Binance Cold Wallet', description: 'Binance Cold Storage' },
+  { address: '0x503828976D22510aad0201ac7EC88293211D23Da', name: 'Coinbase Pro', description: 'Coinbase Exchange' }
 ];
 
 // Add known addresses to leaderboard
