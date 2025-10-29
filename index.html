@@ -1,0 +1,4213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Battle Arena - Powered by Zerion API | Social Trading Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            color: var(--white);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--white);
+        }
+
+        .logo i {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .nav-item:hover {
+            color: var(--white);
+            background: var(--glass);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--glass);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* Page Content */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0 6rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .hero-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .hero-feature:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .hero-feature i {
+            font-size: 1.25rem;
+            color: var(--warning);
+        }
+        
+        .hero-feature span {
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        .zerion-showcase {
+            padding: 2rem 0;
+        }
+        
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .showcase-item {
+            text-align: center;
+            padding: 2rem;
+            background: var(--glass);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+        
+        .showcase-item:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.2);
+        }
+        
+        .showcase-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .showcase-item h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+        
+        .showcase-item p {
+            color: var(--gray-light);
+            line-height: 1.6;
+            font-size: 0.875rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--white) 0%, var(--gray-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-light);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .card-subtitle {
+            color: var(--gray-light);
+            font-size: 0.875rem;
+        }
+
+        /* Wallet Form */
+        .wallet-form {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 0;
+        }
+
+        .form-group.full-width {
+            flex: 1 1 100%;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--gray);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-cols-1 { grid-template-columns: 1fr; }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+        @media (max-width: 768px) {
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray-light);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Leaderboard */
+        .leaderboard-item {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .leaderboard-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .leaderboard-item:hover::before {
+            opacity: 1;
+        }
+
+        .leaderboard-item.rank-1 {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+
+        .leaderboard-item.rank-2 {
+            background: linear-gradient(135deg, rgba(156, 163, 175, 0.1), rgba(107, 114, 128, 0.05));
+            border-color: rgba(156, 163, 175, 0.3);
+        }
+
+        .leaderboard-item.rank-3 {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(234, 88, 12, 0.05));
+            border-color: rgba(249, 115, 22, 0.3);
+        }
+
+        .wallet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .wallet-rank {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            min-width: 60px;
+        }
+
+        .wallet-details h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+
+        .wallet-address {
+            font-size: 0.875rem;
+            color: var(--gray-light);
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .wallet-stats {
+            text-align: right;
+        }
+
+        .wallet-score {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+
+        .wallet-metrics {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .metric-label {
+            color: var(--gray-light);
+        }
+
+        .metric-change {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .metric-change.positive {
+            color: var(--success);
+        }
+
+        .metric-change.negative {
+            color: var(--danger);
+        }
+
+        /* Tournament Cards */
+        .tournament-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tournament-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .tournament-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tournament-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .tournament-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .tournament-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tournament-status.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .tournament-status.completed {
+            background: rgba(156, 163, 175, 0.2);
+            color: var(--gray-light);
+            border: 1px solid rgba(156, 163, 175, 0.3);
+        }
+
+        .tournament-prize {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--warning);
+            margin-bottom: 1rem;
+        }
+
+        .tournament-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--gray-light);
+        }
+
+        .tournament-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tournament-rules {
+            margin-bottom: 1.5rem;
+        }
+
+        .tournament-rules h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .tournament-rules ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tournament-rules li {
+            padding: 0.25rem 0;
+            color: var(--gray-light);
+            font-size: 0.875rem;
+        }
+
+        .tournament-rules li::before {
+            content: '•';
+            color: var(--primary);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        /* Analytics Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+
+        .chart-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        /* Community */
+        .community-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .community-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .community-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .community-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .community-label {
+            color: var(--gray-light);
+            font-size: 0.875rem;
+        }
+
+        .activity-feed {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            color: var(--gray-light);
+            font-size: 0.875rem;
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--glass-border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, var(--glass) 25%, rgba(255, 255, 255, 0.05) 50%, var(--glass) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        .skeleton-text {
+            height: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .skeleton-text.large {
+            height: 2rem;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fcd34d;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .nav {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .wallet-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .wallet-stats {
+                text-align: left;
+                width: 100%;
+            }
+
+            .tournament-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .tournament-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-light);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-light);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .footer-text {
+            color: var(--gray-light);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-text i {
+            color: var(--primary);
+        }
+
+        .footer-link {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--secondary);
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Wallet Details Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .wallet-modal {
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 2rem auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .modal-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .modal-title-info h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-title-info p {
+            color: var(--gray-light);
+            font-size: 0.875rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            overflow-x: auto;
+        }
+
+        .modal-tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--gray-light);
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .modal-tab:hover {
+            color: var(--white);
+        }
+
+        .modal-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .modal-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-tab-content.active {
+            display: block;
+        }
+
+        .modal-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .modal-stat {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .modal-stat-label {
+            color: var(--gray-light);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-stat-value {
+            color: var(--white);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-assets-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .modal-asset-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-asset-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .modal-asset-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .modal-asset-details h4 {
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-asset-details p {
+            color: var(--gray-light);
+            font-size: 0.875rem;
+        }
+
+        .modal-asset-value {
+            text-align: right;
+        }
+
+        .modal-asset-value-amount {
+            color: var(--white);
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-asset-value-percent {
+            color: var(--gray-light);
+            font-size: 0.875rem;
+        }
+
+        .modal-loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .wallet-modal {
+                margin: 1rem;
+                border-radius: 16px;
+            }
+
+            .modal-header {
+                padding: 1.5rem;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+
+            .modal-tabs {
+                gap: 0.25rem;
+            }
+
+            .modal-tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-trophy"></i>
+                    Portfolio Battle Arena
+                </div>
+                <nav class="nav">
+                    <a href="#" class="nav-item active" data-page="home">
+                        <i class="fas fa-home"></i>
+                        Home
+                    </a>
+                    <a href="#" class="nav-item" data-page="leaderboard">
+                        <i class="fas fa-chart-line"></i>
+                        Leaderboard
+                    </a>
+                    <a href="#" class="nav-item" data-page="tournaments">
+                        <i class="fas fa-trophy"></i>
+                        Tournaments
+                    </a>
+                    <a href="#" class="nav-item" data-page="analytics">
+                        <i class="fas fa-chart-bar"></i>
+                        Analytics
+                    </a>
+                    <a href="#" class="nav-item" data-page="community">
+                        <i class="fas fa-users"></i>
+                        Community
+                    </a>
+                </nav>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="dataStatus">Live Zerion Data</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+    <!-- Home Page -->
+    <section class="page active" id="home">
+        <div class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="fas fa-bolt"></i>
+                        <span>Powered by Zerion API</span>
+                    </div>
+                    <h1>Portfolio Battle Arena</h1>
+                    <p class="hero-subtitle">
+                        The ultimate social trading platform where DeFi meets competition. Track 55+ blockchains, discover new tokens, and battle with the world's best traders using real-time Zerion data. From memecoins to DeFi protocols - manage it all in one place.
+                    </p>
+                    <div class="hero-features">
+                        <div class="hero-feature">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Real-time PnL Tracking</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-users"></i>
+                            <span>Social Trading</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-trophy"></i>
+                            <span>Competitive Battles</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-search"></i>
+                            <span>Token Discovery</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-copy"></i>
+                            <span>Copytrading</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Live Stats Dashboard -->
+                    <div class="live-stats-dashboard" style="margin-bottom: 3rem;">
+                        <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; max-width: 1000px; margin: 0 auto;">
+                            <div class="stat-card" style="text-align: center; padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border);">
+                                <div class="stat-value" id="totalPortfolioValue" style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">$0</div>
+                                <div class="stat-label" style="color: var(--gray-light); font-size: 0.875rem; margin-top: 0.5rem;">Total Portfolio Value</div>
+                                <div class="stat-change positive" id="portfolioChange" style="font-size: 0.75rem; margin-top: 0.25rem;">+0%</div>
+                            </div>
+                            <div class="stat-card" style="text-align: center; padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border);">
+                                <div class="stat-value" id="activeTraders" style="font-size: 1.5rem; font-weight: 700; color: var(--success);">0</div>
+                                <div class="stat-label" style="color: var(--gray-light); font-size: 0.875rem; margin-top: 0.5rem;">Active Traders</div>
+                                <div class="stat-change positive" id="tradersChange" style="font-size: 0.75rem; margin-top: 0.25rem;">+0</div>
+                            </div>
+                            <div class="stat-card" style="text-align: center; padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border);">
+                                <div class="stat-value" id="totalTrades" style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">0</div>
+                                <div class="stat-label" style="color: var(--gray-light); font-size: 0.875rem; margin-top: 0.5rem;">Total Trades</div>
+                                <div class="stat-change positive" id="tradesChange" style="font-size: 0.75rem; margin-top: 0.25rem;">+0</div>
+                            </div>
+                            <div class="stat-card" style="text-align: center; padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border);">
+                                <div class="stat-value" id="avgWinRate" style="font-size: 1.5rem; font-weight: 700; color: var(--info);">0%</div>
+                                <div class="stat-label" style="color: var(--gray-light); font-size: 0.875rem; margin-top: 0.5rem;">Avg Win Rate</div>
+                                <div class="stat-change positive" id="winRateChange" style="font-size: 0.75rem; margin-top: 0.25rem;">+0%</div>
+                            </div>
+                            <div class="stat-card" style="text-align: center; padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border);">
+                                <div class="stat-value" id="totalPnL" style="font-size: 1.5rem; font-weight: 700; color: var(--white);">$0</div>
+                                <div class="stat-label" style="color: var(--gray-light); font-size: 0.875rem; margin-top: 0.5rem;">Total PnL</div>
+                                <div class="stat-change positive" id="pnlChange" style="font-size: 0.75rem; margin-top: 0.25rem;">+0%</div>
+                            </div>
+                            <div class="stat-card" style="text-align: center; padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border);">
+                                <div class="stat-value" id="totalPositions" style="font-size: 1.5rem; font-weight: 700; color: var(--purple);">0</div>
+                                <div class="stat-label" style="color: var(--gray-light); font-size: 0.875rem; margin-top: 0.5rem;">Total Positions</div>
+                                <div class="stat-change positive" id="positionsChange" style="font-size: 0.75rem; margin-top: 0.25rem;">+0</div>
+                            </div>
+                            <div class="stat-card" style="text-align: center; padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border);">
+                                <div class="stat-value" id="liveWallets" style="font-size: 1.5rem; font-weight: 700; color: var(--success);">0</div>
+                                <div class="stat-label" style="color: var(--gray-light); font-size: 0.875rem; margin-top: 0.5rem;">Live Wallets</div>
+                                <div class="stat-change positive" id="liveWalletsChange" style="font-size: 0.75rem; margin-top: 0.25rem;">+0</div>
+                            </div>
+                            <div class="stat-card" style="text-align: center; padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border);">
+                                <div class="stat-value" id="avgPortfolioValue" style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">$0</div>
+                                <div class="stat-label" style="color: var(--gray-light); font-size: 0.875rem; margin-top: 0.5rem;">Avg Portfolio Value</div>
+                                <div class="stat-change positive" id="avgPortfolioChange" style="font-size: 0.75rem; margin-top: 0.25rem;">+0%</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Real-time Data Indicator -->
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <div class="status-indicator" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--glass); border-radius: 20px; border: 1px solid var(--glass-border);">
+                                <div class="status-dot" style="width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite;"></div>
+                                <span style="color: var(--gray-light); font-size: 0.875rem;">Live Zerion Data • 55+ Blockchains • Real-time Updates</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Wallet Form -->
+                    <div class="card wallet-form">
+                        <div class="card-header">
+                            <h2 class="card-title">Join the Arena</h2>
+                            <p class="card-subtitle">Enter your wallet to start competing</p>
+                        </div>
+                        
+                        <form id="walletForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="address" class="form-label">
+                                        <i class="fas fa-wallet"></i>
+                                        Wallet Address *
+                                    </label>
+                                    <input type="text" id="address" name="address" class="form-input" placeholder="0x..." required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="name" class="form-label">
+                                        <i class="fas fa-user"></i>
+                                        Display Name
+                                    </label>
+                                    <input type="text" id="name" name="name" class="form-input" placeholder="Your professional trading name">
+                                </div>
+                                
+                                <div class="form-group" style="flex: 0 0 auto;">
+                                    <button type="submit" class="btn" id="submitBtn" style="height: fit-content; padding: 1rem 2rem; white-space: nowrap;">
+                                        <i class="fas fa-rocket"></i>
+                                        Enter Battle Arena
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="description" class="form-label">
+                                    <i class="fas fa-info-circle"></i>
+                                    Trading Strategy (Optional)
+                                </label>
+                                <textarea id="description" name="description" class="form-input" placeholder="Describe your trading approach, risk tolerance, and specializations..." rows="2"></textarea>
+                            </div>
+                        </form>
+                        
+                        <div id="message"></div>
+                    </div>
+                    
+                    <!-- Zerion API Showcase -->
+                    <div class="card" style="margin-top: 3rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Powered by Zerion API</h3>
+                            <div class="status-indicator">
+                                <div class="status-dot"></div>
+                                <span>Live Data</span>
+                            </div>
+                        </div>
+                        <div class="zerion-showcase">
+                            <div class="showcase-grid">
+                                <div class="showcase-item">
+                                    <div class="showcase-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <h4>Real-time Portfolio & PnL</h4>
+                                    <p>Track balances, positions, and profit & loss across 55+ blockchains in real-time</p>
+                                </div>
+                                <div class="showcase-item">
+                                    <div class="showcase-icon">
+                                        <i class="fas fa-history"></i>
+                                    </div>
+                                    <h4>Transactions & History</h4>
+                                    <p>Decoded swaps, transfers, approvals, and even bundled transactions</p>
+                                </div>
+                                <div class="showcase-item">
+                                    <div class="showcase-icon">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </div>
+                                    <h4>Charts & Market Data</h4>
+                                    <p>Price charts, asset metadata, and token discovery across all chains</p>
+                                </div>
+                                <div class="showcase-item">
+                                    <div class="showcase-icon">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    <h4>Webhooks & Notifications</h4>
+                                    <p>Address activity, transfers, and contract interactions in real-time</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Performers Preview -->
+                    <div class="card" style="margin-top: 3rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Top Performers</h3>
+                            <div class="status-indicator">
+                                <div class="status-dot"></div>
+                                <span>Live Rankings</span>
+                            </div>
+                        </div>
+                        <div id="topPerformersPreview" class="leaderboard-preview">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <button class="btn btn-secondary" onclick="showPage('leaderboard')">
+                                <i class="fas fa-trophy"></i>
+                                View Full Leaderboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalWallets">0</div>
+                    <div class="stat-label">Active Traders</div>
+                    <div class="stat-change positive" id="walletsChange">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalValue">$0</div>
+                    <div class="stat-label">Total Portfolio Value</div>
+                    <div class="stat-change positive" id="valueChange">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="topScore">0</div>
+                    <div class="stat-label">Highest Score</div>
+                    <div class="stat-change positive" id="scoreChange">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgPnL">0%</div>
+                    <div class="stat-label">Average PnL</div>
+                    <div class="stat-change positive" id="pnlChange">+0%</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard Page -->
+    <section class="page" id="leaderboard">
+        <div class="container">
+            <div class="grid grid-cols-3">
+                <!-- Sidebar -->
+                <div class="grid-cols-1">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Market Overview</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="marketChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Top Performers</h3>
+                        </div>
+                        <div id="topPerformers">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="grid-cols-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Battle Leaderboard</h3>
+                            <p class="card-subtitle" id="leaderboardCount">0 warriors competing</p>
+                        </div>
+                        <div id="leaderboard">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tournaments Page -->
+    <section class="page" id="tournaments">
+        <div class="container">
+            <!-- Tournament Stats Overview -->
+            <div class="stats-grid" style="margin-bottom: 2rem;">
+                <div class="stat-card">
+                    <div class="stat-value" id="activeTournaments">0</div>
+                    <div class="stat-label">Active Tournaments</div>
+                    <div class="stat-change positive" id="tournamentsChange">+0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalParticipants">0</div>
+                    <div class="stat-label">Total Participants</div>
+                    <div class="stat-change positive" id="participantsChange">+0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPrizePool">$0</div>
+                    <div class="stat-label">Total Prize Pool</div>
+                    <div class="stat-change positive" id="prizePoolChange">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgTournamentDuration">0h</div>
+                    <div class="stat-label">Avg Duration</div>
+                    <div class="stat-change positive" id="durationChange">+0h</div>
+                </div>
+            </div>
+
+            <!-- Tournament Categories -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">Tournament Categories</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Live Data</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3" style="gap: 1rem;">
+                    <div class="tournament-category" style="padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">🏆</div>
+                        <h4 style="color: var(--white); margin-bottom: 0.5rem;">Daily Battles</h4>
+                        <p style="color: var(--gray-light); font-size: 0.875rem; margin-bottom: 1rem;">24-hour portfolio competitions</p>
+                        <div class="stat-value" style="font-size: 1.25rem; color: var(--primary);" id="dailyBattles">0</div>
+                        <div class="stat-label" style="font-size: 0.75rem; color: var(--gray-light);">Active</div>
+                    </div>
+                    <div class="tournament-category" style="padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">⚡</div>
+                        <h4 style="color: var(--white); margin-bottom: 0.5rem;">Weekly Championships</h4>
+                        <p style="color: var(--gray-light); font-size: 0.875rem; margin-bottom: 1rem;">7-day strategic competitions</p>
+                        <div class="stat-value" style="font-size: 1.25rem; color: var(--success);" id="weeklyChampionships">0</div>
+                        <div class="stat-label" style="font-size: 0.75rem; color: var(--gray-light);">Active</div>
+                    </div>
+                    <div class="tournament-category" style="padding: 1.5rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">👑</div>
+                        <h4 style="color: var(--white); margin-bottom: 0.5rem;">Monthly Masters</h4>
+                        <p style="color: var(--gray-light); font-size: 0.875rem; margin-bottom: 1rem;">30-day elite competitions</p>
+                        <div class="stat-value" style="font-size: 1.25rem; color: var(--warning);" id="monthlyMasters">0</div>
+                        <div class="stat-label" style="font-size: 0.75rem; color: var(--gray-light);">Active</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Tournaments -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Active Tournaments</h2>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Live Updates</span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="showCreateTournament()">
+                            <i class="fas fa-plus"></i>
+                            Create Tournament
+                        </button>
+                    </div>
+                </div>
+                <div id="tournamentsList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analytics Page -->
+    <section class="page" id="analytics">
+        <div class="container">
+            <!-- Wallet Search Section -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">Individual Wallet Analysis</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Real-time Zerion Data</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-end;">
+                    <div style="flex: 1;">
+                        <label for="walletSearch" class="form-label">
+                            <i class="fas fa-search"></i>
+                            Enter Wallet Address
+                        </label>
+                        <input type="text" id="walletSearch" class="form-input" placeholder="0x..." style="margin-bottom: 0;">
+                    </div>
+                    <button class="btn" onclick="analyzeWallet()" id="analyzeBtn">
+                        <i class="fas fa-chart-line"></i>
+                        Analyze Portfolio
+                    </button>
+                </div>
+                <div id="walletAnalysisResult" style="margin-top: 1rem;"></div>
+            </div>
+
+            <!-- Enhanced Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTrades">0</div>
+                    <div class="stat-label">Total Trades</div>
+                    <div class="stat-change positive" id="tradesChange">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgWinRate">0%</div>
+                    <div class="stat-label">Average Win Rate</div>
+                    <div class="stat-change positive" id="winRateChange">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalVolume">$0</div>
+                    <div class="stat-label">Trading Volume</div>
+                    <div class="stat-change positive" id="volumeChange">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgRiskScore">0</div>
+                    <div class="stat-label">Average Risk Score</div>
+                    <div class="stat-change negative" id="riskChange">-0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalWalletsAnalytics">0</div>
+                    <div class="stat-label">Active Traders</div>
+                    <div class="stat-change positive" id="tradersChange">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgSharpeRatio">0</div>
+                    <div class="stat-label">Avg Sharpe Ratio</div>
+                    <div class="stat-change positive" id="sharpeChange">+0%</div>
+                </div>
+            </div>
+
+            <!-- Market Overview Section -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">Market Overview</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span id="marketStatus">Live Data</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3" style="gap: 1rem;">
+                    <div class="stat-card" style="text-align: center;">
+                        <div class="stat-value" style="color: #10b981;">$2.1T</div>
+                        <div class="stat-label">Total Market Cap</div>
+                        <div class="stat-change positive">+2.3%</div>
+                    </div>
+                    <div class="stat-card" style="text-align: center;">
+                        <div class="stat-value" style="color: #f59e0b;">$89.2B</div>
+                        <div class="stat-label">24h Volume</div>
+                        <div class="stat-change positive">+15.7%</div>
+                    </div>
+                    <div class="stat-card" style="text-align: center;">
+                        <div class="stat-value" style="color: #ef4444;">42.1</div>
+                        <div class="stat-label">Fear & Greed Index</div>
+                        <div class="stat-change negative">-5.2</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-2">
+                <div class="chart-card">
+                    <h3 class="chart-title">Portfolio Performance</h3>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">Asset Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="assetChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Analytics Section -->
+            <div class="grid grid-cols-2" style="margin-top: 2rem;">
+                <div class="chart-card">
+                    <h3 class="chart-title">Trading Activity Heatmap</h3>
+                    <div class="chart-container">
+                        <canvas id="heatmapChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">Top Performing Assets</h3>
+                    <div id="topAssetsList">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-card" style="margin-top: 2rem;">
+                <h3 class="chart-title">Risk vs Return Analysis</h3>
+                <div class="chart-container">
+                    <canvas id="riskReturnChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Performance Metrics Table -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">Detailed Performance Metrics</h3>
+                    <button class="btn btn-secondary" onclick="exportAnalytics()">
+                        <i class="fas fa-download"></i>
+                        Export Data
+                    </button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--glass-border);">
+                                <th style="padding: 1rem; text-align: left; color: var(--white);">Metric</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--white);">Value</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--white);">Change</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--white);">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="metricsTableBody">
+                            <tr style="border-bottom: 1px solid var(--glass-border);">
+                                <td style="padding: 1rem; color: var(--gray-light);">Total Portfolio Value</td>
+                                <td style="padding: 1rem; color: var(--white); font-weight: 600;" id="metricTotalValue">$0</td>
+                                <td style="padding: 1rem; color: var(--success);" id="metricTotalValueChange">+0%</td>
+                                <td style="padding: 1rem;"><i class="fas fa-arrow-up" style="color: var(--success);"></i></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--glass-border);">
+                                <td style="padding: 1rem; color: var(--gray-light);">Average PnL</td>
+                                <td style="padding: 1rem; color: var(--white); font-weight: 600;" id="metricAvgPnL">0%</td>
+                                <td style="padding: 1rem; color: var(--success);" id="metricAvgPnLChange">+0%</td>
+                                <td style="padding: 1rem;"><i class="fas fa-arrow-up" style="color: var(--success);"></i></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--glass-border);">
+                                <td style="padding: 1rem; color: var(--gray-light);">Max Drawdown</td>
+                                <td style="padding: 1rem; color: var(--white); font-weight: 600;" id="metricMaxDrawdown">0%</td>
+                                <td style="padding: 1rem; color: var(--danger);" id="metricMaxDrawdownChange">+0%</td>
+                                <td style="padding: 1rem;"><i class="fas fa-arrow-down" style="color: var(--danger);"></i></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--glass-border);">
+                                <td style="padding: 1rem; color: var(--gray-light);">Sharpe Ratio</td>
+                                <td style="padding: 1rem; color: var(--white); font-weight: 600;" id="metricSharpeRatio">0</td>
+                                <td style="padding: 1rem; color: var(--success);" id="metricSharpeRatioChange">+0%</td>
+                                <td style="padding: 1rem;"><i class="fas fa-arrow-up" style="color: var(--success);"></i></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1rem; color: var(--gray-light);">Volatility</td>
+                                <td style="padding: 1rem; color: var(--white); font-weight: 600;" id="metricVolatility">0%</td>
+                                <td style="padding: 1rem; color: var(--warning);" id="metricVolatilityChange">+0%</td>
+                                <td style="padding: 1rem;"><i class="fas fa-minus" style="color: var(--warning);"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Page -->
+    <section class="page" id="community">
+        <div class="container">
+            <!-- Community Mission -->
+            <div class="card" style="margin-bottom: 2rem; text-align: center;">
+                <div class="card-header">
+                    <h3 class="card-title">Join the DeFi Revolution</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Live Community</span>
+                    </div>
+                </div>
+                <div style="padding: 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--gray-light); margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                        Discover new tokens, share trading strategies, and connect with the global DeFi community. 
+                        From memecoins to DeFi protocols - explore it all with real-time Zerion data across 55+ blockchains.
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn" onclick="showCreatePost()">
+                            <i class="fas fa-plus"></i>
+                            Share Your Strategy
+                        </button>
+                        <button class="btn btn-secondary" onclick="showPage('analytics')">
+                            <i class="fas fa-search"></i>
+                            Discover Tokens
+                        </button>
+                        <button class="btn btn-secondary" onclick="showPage('leaderboard')">
+                            <i class="fas fa-trophy"></i>
+                            View Rankings
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Community Stats -->
+            <div class="community-stats">
+                <div class="community-card">
+                    <div class="community-icon">👥</div>
+                    <div class="community-value" id="totalUsers">0</div>
+                    <div class="community-label">Active Users</div>
+                    <div class="stat-change positive" id="usersChange">+0%</div>
+                </div>
+                <div class="community-card">
+                    <div class="community-icon">💬</div>
+                    <div class="community-value" id="totalComments">0</div>
+                    <div class="community-label">Comments</div>
+                    <div class="stat-change positive" id="commentsChange">+0%</div>
+                </div>
+                <div class="community-card">
+                    <div class="community-icon">👀</div>
+                    <div class="community-value" id="totalFollows">0</div>
+                    <div class="community-label">Follows</div>
+                    <div class="stat-change positive" id="followsChange">+0%</div>
+                </div>
+                <div class="community-card">
+                    <div class="community-icon">🏆</div>
+                    <div class="community-value" id="totalTournaments">0</div>
+                    <div class="community-label">Tournaments</div>
+                    <div class="stat-change positive" id="tournamentsChange">+0%</div>
+                </div>
+                <div class="community-card">
+                    <div class="community-icon">⭐</div>
+                    <div class="community-value" id="totalLikes">0</div>
+                    <div class="community-label">Total Likes</div>
+                    <div class="stat-change positive" id="likesChange">+0%</div>
+                </div>
+                <div class="community-card">
+                    <div class="community-icon">🔥</div>
+                    <div class="community-value" id="activeNow">0</div>
+                    <div class="community-label">Online Now</div>
+                    <div class="stat-change positive" id="onlineChange">+0%</div>
+                </div>
+            </div>
+
+            <!-- Community Features Section -->
+            <div class="grid grid-cols-3" style="margin-bottom: 2rem;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Quick Actions</h3>
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Live</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <button class="btn btn-secondary" onclick="showCreatePost()">
+                            <i class="fas fa-plus"></i>
+                            Create Post
+                        </button>
+                        <button class="btn btn-secondary" onclick="showCreateTournament()">
+                            <i class="fas fa-trophy"></i>
+                            Start Tournament
+                        </button>
+                        <button class="btn btn-secondary" onclick="showLeaderboard()">
+                            <i class="fas fa-chart-line"></i>
+                            View Leaderboard
+                        </button>
+                        <button class="btn btn-secondary" onclick="showAnalytics()">
+                            <i class="fas fa-chart-bar"></i>
+                            View Analytics
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Trending Topics</h3>
+                    </div>
+                    <div id="trendingTopics">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Community Rules</h3>
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--gray-light);">
+                        <p style="margin-bottom: 0.5rem;">• Be respectful and constructive</p>
+                        <p style="margin-bottom: 0.5rem;">• Share valuable insights and strategies</p>
+                        <p style="margin-bottom: 0.5rem;">• No spam or promotional content</p>
+                        <p style="margin-bottom: 0.5rem;">• Follow trading best practices</p>
+                        <p>• Help others learn and grow</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Community Content -->
+            <div class="grid grid-cols-2">
+                <div class="activity-feed">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Activity</h3>
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Live Updates</span>
+                        </div>
+                    </div>
+                    <div id="activityFeed">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Top Contributors</h3>
+                        <button class="btn btn-secondary" onclick="refreshContributors()">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                    </div>
+                    <div id="topContributors">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Posts Section -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">Community Posts</h3>
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn btn-secondary" onclick="filterPosts('all')">
+                            <i class="fas fa-list"></i>
+                            All Posts
+                        </button>
+                        <button class="btn btn-secondary" onclick="filterPosts('strategy')">
+                            <i class="fas fa-chess"></i>
+                            Strategies
+                        </button>
+                        <button class="btn btn-secondary" onclick="filterPosts('news')">
+                            <i class="fas fa-newspaper"></i>
+                            News
+                        </button>
+                        <button class="btn btn-secondary" onclick="filterPosts('question')">
+                            <i class="fas fa-question-circle"></i>
+                            Questions
+                        </button>
+                    </div>
+                </div>
+                <div id="communityPosts">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Leaderboard -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">Community Leaderboard</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Updated Live</span>
+                    </div>
+                </div>
+                <div id="communityLeaderboard">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Chat Room -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">Live Chat Room</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span id="chatStatus">Online</span>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; height: 500px;">
+                    <!-- Chat Messages -->
+                    <div id="chatMessages" style="flex: 1; overflow-y: auto; padding: 1rem; border: 1px solid var(--glass-border); border-radius: 8px; margin-bottom: 1rem; background: rgba(255, 255, 255, 0.02);">
+                        <div style="text-align: center; color: var(--gray-light); padding: 2rem;">
+                            <i class="fas fa-comments" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <p>Welcome to the Portfolio Battle Arena chat!</p>
+                            <p style="font-size: 0.875rem;">Share strategies, ask questions, and connect with other traders.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Input -->
+                    <div style="display: flex; gap: 1rem;">
+                        <input type="text" id="chatInput" class="form-input" placeholder="Type your message..." style="flex: 1; margin-bottom: 0;">
+                        <button class="btn btn-secondary" onclick="sendMessage()" id="sendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                            Send
+                        </button>
+                    </div>
+                    
+                    <!-- Chat Info -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-light);">
+                        <span id="onlineCount">0 users online</span>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-secondary" onclick="clearChat()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                <i class="fas fa-trash"></i>
+                                Clear
+                            </button>
+                            <button class="btn btn-secondary" onclick="toggleNotifications()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                <i class="fas fa-bell"></i>
+                                Notifications
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let leaderboard = [];
+        let tournaments = [];
+        let marketChart = null;
+        let performanceChart = null;
+        let assetChart = null;
+        let riskReturnChart = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            await fetchLeaderboard();
+            await fetchTournaments();
+            initializeCharts();
+            setupEventListeners();
+            updateCommunityStats();
+        }
+
+        // Navigation
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = item.dataset.page;
+                    showPage(page);
+                });
+            });
+
+            // Wallet form
+            document.getElementById('walletForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+
+            // Load page-specific data
+            switch(pageId) {
+                case 'leaderboard':
+                    updateLeaderboardDisplay();
+                    break;
+                case 'tournaments':
+                    updateTournamentsDisplay();
+                    break;
+                case 'analytics':
+                    updateAnalyticsDisplay();
+                    break;
+                case 'community':
+                    updateCommunityDisplay();
+                    break;
+            }
+        }
+
+        // Format currency
+        function formatCurrency(value) {
+            if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
+            if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
+            if (value >= 1e3) return `$${(value / 1e3).toFixed(2)}K`;
+            return `$${value.toFixed(2)}`;
+        }
+
+        // Format percentage
+        function formatPercentage(value) {
+            const sign = value >= 0 ? '+' : '';
+            return `${sign}${value.toFixed(2)}%`;
+        }
+
+        // Format PnL
+        function formatPnL(pnl) {
+            const isPositive = pnl >= 0;
+            return {
+                value: formatCurrency(Math.abs(pnl)),
+                isPositive,
+                class: isPositive ? 'positive' : 'negative',
+                icon: isPositive ? 'fas fa-arrow-up' : 'fas fa-arrow-down'
+            };
+        }
+
+        // Get rank styling
+        function getRankStyle(rank) {
+            if (rank === 1) return { class: 'rank-1', icon: '🥇', color: '#fbbf24' };
+            if (rank === 2) return { class: 'rank-2', icon: '🥈', color: '#9ca3af' };
+            if (rank === 3) return { class: 'rank-3', icon: '🥉', color: '#f97316' };
+            return { class: '', icon: `#${rank}`, color: 'var(--primary)' };
+        }
+
+        // Fetch leaderboard
+        async function fetchLeaderboard() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/leaderboard`);
+                const data = await response.json();
+                leaderboard = data.wallets || data;
+                updateStats();
+            } catch (error) {
+                console.error('Error fetching leaderboard:', error);
+                showError('Failed to load leaderboard. Please check your connection.');
+            }
+        }
+
+        // Fetch tournaments
+        async function fetchTournaments() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/tournaments`);
+                const data = await response.json();
+                tournaments = data.tournaments || data;
+            } catch (error) {
+                console.error('Error fetching tournaments:', error);
+            }
+        }
+
+        // Update leaderboard display
+        function updateLeaderboardDisplay() {
+            const container = document.getElementById('leaderboard');
+            const countElement = document.getElementById('leaderboardCount');
+            
+            countElement.textContent = `${leaderboard.length} warriors competing`;
+            
+            if (leaderboard.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <i class="fas fa-trophy" style="font-size: 4rem; color: var(--gray); margin-bottom: 1rem;"></i>
+                        <h3 style="margin-bottom: 0.5rem;">No Battles Yet</h3>
+                        <p style="color: var(--gray-light);">Be the first to enter the arena!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = leaderboard.map((wallet, index) => {
+                const rankStyle = getRankStyle(wallet.rank);
+                const pnlData = formatPnL(wallet.totalPnL);
+                const pnlPercentage = wallet.totalValue > 0 ? (wallet.totalPnL / wallet.totalValue) * 100 : 0;
+                
+                return `
+                    <div class="leaderboard-item ${rankStyle.class} fade-in" onclick="viewWalletDetails('${wallet.address}')" style="animation-delay: ${index * 0.1}s">
+                        <div class="wallet-header">
+                            <div class="wallet-info">
+                                <div class="wallet-rank" style="color: ${rankStyle.color}">
+                                    ${rankStyle.icon}
+                                </div>
+                                <div class="wallet-details">
+                                    <h3>${wallet.name}</h3>
+                                    <div class="wallet-address">${wallet.address}</div>
+                                </div>
+                            </div>
+                            <div class="wallet-stats">
+                                <div class="wallet-score">${wallet.score.toLocaleString()}</div>
+                                <div class="wallet-metrics">
+                                    <div class="metric">
+                                        <div class="metric-value">${formatCurrency(wallet.totalValue)}</div>
+                                        <div class="metric-label">Value</div>
+                                    </div>
+                                    <div class="metric">
+                                        <div class="metric-value ${pnlData.class}">
+                                            <i class="${pnlData.icon}"></i>
+                                            ${pnlData.value}
+                                        </div>
+                                        <div class="metric-label">PnL</div>
+                                        <div class="metric-change ${pnlData.class}">
+                                            ${formatPercentage(pnlPercentage)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: var(--gray-light);">
+                            <span>Joined: ${new Date(wallet.joinDate).toLocaleDateString()}</span>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                ${wallet.isRealData ? '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Live Data</span>' : '<span style="color: #f59e0b;"><i class="fas fa-database"></i> Mock</span>'}
+                                <span><i class="fas fa-eye"></i> Click to view details</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update tournaments display
+        function updateTournamentsDisplay() {
+            const container = document.getElementById('tournamentsList');
+            
+            if (tournaments.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <i class="fas fa-trophy" style="font-size: 4rem; color: var(--gray); margin-bottom: 1rem;"></i>
+                        <h3 style="margin-bottom: 0.5rem;">No Tournaments Yet</h3>
+                        <p style="color: var(--gray-light);">Create the first tournament!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = tournaments.map(tournament => {
+                const isActive = tournament.status === 'active';
+                const timeRemaining = getTimeRemaining(tournament.endDate);
+                
+                return `
+                    <div class="tournament-card">
+                        <div class="tournament-header">
+                            <h3 class="tournament-title">${tournament.name}</h3>
+                            <span class="tournament-status ${tournament.status}">${tournament.status.toUpperCase()}</span>
+                        </div>
+                        
+                        <div class="tournament-prize">🏆 ${tournament.prize}</div>
+                        
+                        <div class="tournament-meta">
+                            <div class="tournament-meta-item">
+                                <i class="fas fa-clock"></i>
+                                <span>${isActive ? `Ends in: ${timeRemaining}` : `Ended: ${new Date(tournament.endDate).toLocaleDateString()}`}</span>
+                            </div>
+                            <div class="tournament-meta-item">
+                                <i class="fas fa-users"></i>
+                                <span>${tournament.participants.length}/${tournament.maxParticipants} participants</span>
+                            </div>
+                            <div class="tournament-meta-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>Started: ${new Date(tournament.startDate).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tournament-rules">
+                            <h4>Rules:</h4>
+                            <ul>
+                                ${tournament.rules.map(rule => `<li>${rule}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <p style="color: var(--gray-light); margin-bottom: 1.5rem;">${tournament.description}</p>
+                        
+                        ${isActive ? `
+                            <button class="btn btn-success" onclick="joinTournament('${tournament.id}')">
+                                <i class="fas fa-plus"></i>
+                                Join Tournament
+                            </button>
+                        ` : `
+                            <button class="btn btn-secondary" disabled>
+                                <i class="fas fa-lock"></i>
+                                Tournament Ended
+                            </button>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update analytics display
+        function updateAnalyticsDisplay() {
+            // Update analytics stats
+            const totalTrades = leaderboard.reduce((sum, w) => sum + (w.transactions || 0), 0);
+            const avgWinRate = leaderboard.length > 0 ? 
+                leaderboard.reduce((sum, w) => sum + (w.winRate || 0), 0) / leaderboard.length * 100 : 0;
+            const totalVolume = leaderboard.reduce((sum, w) => sum + (w.totalValue || 0), 0);
+            const avgRiskScore = leaderboard.length > 0 ? 
+                leaderboard.reduce((sum, w) => sum + (w.riskScore || 0), 0) / leaderboard.length : 0;
+
+            document.getElementById('totalTrades').textContent = totalTrades.toLocaleString();
+            document.getElementById('avgWinRate').textContent = avgWinRate.toFixed(1) + '%';
+            document.getElementById('totalVolume').textContent = formatCurrency(totalVolume);
+            document.getElementById('avgRiskScore').textContent = avgRiskScore.toFixed(1);
+
+            // Update charts
+            updatePerformanceChart();
+            updateAssetChart();
+            updateRiskReturnChart();
+        }
+
+        // Update community display
+        function updateCommunityDisplay() {
+            updateActivityFeed();
+            updateTopContributors();
+        }
+
+        // Update stats
+        function updateStats() {
+            const totalValue = leaderboard.reduce((sum, w) => sum + (w.totalValue || 0), 0);
+            const avgPnL = leaderboard.length > 0 ? 
+                leaderboard.reduce((sum, w) => sum + ((w.totalPnL / w.totalValue) * 100), 0) / leaderboard.length : 0;
+            
+            const realDataWallets = leaderboard.filter(w => w.isRealData).length;
+            const totalTransactions = leaderboard.reduce((sum, w) => sum + (w.transactions || 0), 0);
+            
+            document.getElementById('totalWallets').textContent = leaderboard.length;
+            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+            document.getElementById('topScore').textContent = leaderboard[0]?.score || 0;
+            
+            // Update all page stats
+            updateHomepageStats();
+            updateTournamentStats();
+            updateCommunityStats();
+            document.getElementById('avgPnL').textContent = formatPercentage(avgPnL);
+            
+            // Update data status indicator
+            const dataStatus = document.getElementById('dataStatus');
+            if (realDataWallets > 0) {
+                dataStatus.innerHTML = `Live Zerion Data (${realDataWallets} wallets)`;
+                dataStatus.style.color = '#10b981';
+            } else {
+                dataStatus.innerHTML = 'Mock Data';
+                dataStatus.style.color = '#f59e0b';
+            }
+        }
+
+        // Update community stats
+        function updateCommunityStats() {
+            const totalComments = leaderboard.reduce((sum, w) => sum + (w.comments || 0), 0);
+            const totalFollows = leaderboard.reduce((sum, w) => sum + (w.followers || 0), 0);
+            
+            document.getElementById('totalUsers').textContent = leaderboard.length;
+            document.getElementById('totalComments').textContent = totalComments;
+            document.getElementById('totalFollows').textContent = totalFollows;
+            document.getElementById('totalTournaments').textContent = tournaments.length;
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            initializeMarketChart();
+        }
+
+        function initializeMarketChart() {
+            const ctx = document.getElementById('marketChart').getContext('2d');
+            
+            const labels = ['1D', '3D', '1W', '2W', '1M'];
+            const data = [100, 102, 98, 105, 110];
+            
+            marketChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Market Performance',
+                        data: data,
+                        borderColor: 'rgb(99, 102, 241)',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'var(--gray-light)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'var(--gray-light)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+            const data = [100, 105, 98, 112];
+            
+            if (performanceChart) {
+                performanceChart.destroy();
+            }
+            
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Portfolio Performance',
+                        data: data,
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time Period',
+                                color: '#ffffff',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Performance (%)',
+                                color: '#ffffff',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAssetChart() {
+            const ctx = document.getElementById('assetChart').getContext('2d');
+            
+            const data = {
+                labels: ['ETH', 'BTC', 'USDC', 'Other'],
+                datasets: [{
+                    data: [40, 30, 20, 10],
+                    backgroundColor: [
+                        'rgb(99, 102, 241)',
+                        'rgb(245, 158, 11)',
+                        'rgb(16, 185, 129)',
+                        'rgb(139, 92, 246)'
+                    ]
+                }]
+            };
+            
+            if (assetChart) {
+                assetChart.destroy();
+            }
+            
+            assetChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Asset Distribution',
+                            color: '#ffffff',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateRiskReturnChart() {
+            const ctx = document.getElementById('riskReturnChart').getContext('2d');
+            
+            const data = {
+                labels: leaderboard.slice(0, 10).map(w => w.name),
+                datasets: [{
+                    label: 'Risk vs Return',
+                    data: leaderboard.slice(0, 10).map(w => ({
+                        x: w.riskScore || Math.random() * 100,
+                        y: w.totalPnL || Math.random() * 10000
+                    })),
+                    backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                    borderColor: 'rgb(99, 102, 241)',
+                    borderWidth: 1
+                }]
+            };
+            
+            if (riskReturnChart) {
+                riskReturnChart.destroy();
+            }
+            
+            riskReturnChart = new Chart(ctx, {
+                type: 'scatter',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Risk Score',
+                                color: '#ffffff',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'PnL ($)',
+                                color: '#ffffff',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update top performers
+        function updateTopPerformers() {
+            const container = document.getElementById('topPerformers');
+            const top3 = leaderboard.slice(0, 3);
+            
+            if (top3.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-light); text-align: center;">No data available</p>';
+                return;
+            }
+            
+            container.innerHTML = top3.map((wallet, index) => {
+                const rankStyle = getRankStyle(wallet.rank);
+                const pnlData = formatPnL(wallet.totalPnL);
+                
+                return `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--glass-border);">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-size: 1.25rem;">${rankStyle.icon}</span>
+                            <div>
+                                <div style="font-weight: 600;">${wallet.name}</div>
+                                <div style="font-size: 0.875rem; color: var(--gray-light);">${formatCurrency(wallet.totalValue)}</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 700; color: ${rankStyle.color};">${wallet.score.toLocaleString()}</div>
+                            <div class="metric-change ${pnlData.class}" style="font-size: 0.75rem;">
+                                <i class="${pnlData.icon}"></i>
+                                ${pnlData.value}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update activity feed
+        function updateActivityFeed() {
+            const container = document.getElementById('activityFeed');
+            
+            // Generate real activity based on actual leaderboard data
+            const activities = [];
+            
+            if (leaderboard.length > 0) {
+                // Recent wallet additions
+                leaderboard.slice(0, 3).forEach((wallet, index) => {
+                    const timeAgo = getTimeAgo(new Date(wallet.joinDate));
+                    activities.push({
+                        user: wallet.name,
+                        action: 'joined the battle arena',
+                        time: timeAgo,
+                        type: 'join'
+                    });
+                });
+                
+                // Recent high scores
+                const topPerformers = leaderboard.filter(w => w.score > 50).slice(0, 2);
+                topPerformers.forEach((wallet, index) => {
+                    const timeAgo = getTimeAgo(new Date(wallet.lastUpdated));
+                    activities.push({
+                        user: wallet.name,
+                        action: `achieved a high score of ${wallet.score.toLocaleString()}`,
+                        time: timeAgo,
+                        type: 'achievement'
+                    });
+                });
+                
+                // Recent transactions
+                const activeTraders = leaderboard.filter(w => w.transactions > 0).slice(0, 2);
+                activeTraders.forEach((wallet, index) => {
+                    const timeAgo = getTimeAgo(new Date(wallet.lastUpdated));
+                    activities.push({
+                        user: wallet.name,
+                        action: `completed ${wallet.transactions} transactions`,
+                        time: timeAgo,
+                        type: 'trading'
+                    });
+                });
+            }
+            
+            // Sort by most recent (joinDate/lastUpdated)
+            activities.sort((a, b) => {
+                const aTime = a.type === 'join' ? 
+                    leaderboard.find(w => w.name === a.user)?.joinDate : 
+                    leaderboard.find(w => w.name === a.user)?.lastUpdated;
+                const bTime = b.type === 'join' ? 
+                    leaderboard.find(w => w.name === b.user)?.joinDate : 
+                    leaderboard.find(w => w.name === b.user)?.lastUpdated;
+                return new Date(bTime) - new Date(aTime);
+            });
+            
+            if (activities.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--gray-light);">
+                        <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>No recent activity yet</p>
+                        <p style="font-size: 0.875rem;">Be the first to join the arena!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = activities.slice(0, 8).map(activity => `
+                <div class="activity-item">
+                    <div class="activity-avatar">${activity.user.charAt(0)}</div>
+                    <div class="activity-content">
+                        <div class="activity-text">
+                            <strong>${activity.user}</strong> ${activity.action}
+                        </div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update top contributors
+        function updateTopContributors() {
+            const container = document.getElementById('topContributors');
+            const contributors = leaderboard.slice(0, 5);
+            
+            if (contributors.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--gray-light);">
+                        <i class="fas fa-trophy" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>No contributors yet</p>
+                        <p style="font-size: 0.875rem;">Join the arena to become a top contributor!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = contributors.map((wallet, index) => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="activity-avatar">${wallet.name.charAt(0)}</div>
+                        <div>
+                            <div style="font-weight: 600;">${wallet.name}</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-light);">
+                                ${wallet.transactions || 0} transactions • ${wallet.isRealData ? 'Real Data' : 'Mock Data'}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 700; color: var(--primary);">#${wallet.rank || index + 1}</div>
+                        <div style="font-size: 0.75rem; color: var(--gray-light);">${wallet.score.toLocaleString()} pts</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Utility functions
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = now.getTime() - date.getTime();
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+            if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            return 'Just now';
+        }
+
+        function getTimeRemaining(endDate) {
+            const now = new Date();
+            const end = new Date(endDate);
+            const diff = end.getTime() - now.getTime();
+            
+            if (diff <= 0) return 'Ended';
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (days > 0) return `${days}d ${hours}h`;
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            return `${minutes}m`;
+        }
+
+        // Handle form submission
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                address: formData.get('address'),
+                name: formData.get('name'),
+                description: formData.get('description')
+            };
+
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding to Battle...';
+            messageDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/wallets`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to add wallet');
+                }
+
+                const result = await response.json();
+                showSuccess(`Wallet added successfully! Battle Score: ${result.score}`);
+                
+                // Reset form
+                e.target.reset();
+                
+                // Refresh data
+                await fetchLeaderboard();
+                updateStats();
+                
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Enter Battle Arena';
+            }
+        }
+
+        // View wallet details
+        async function viewWalletDetails(address) {
+            const wallet = leaderboard.find(w => w.address === address);
+            if (!wallet) return;
+            
+            // Show modal
+            const modal = document.getElementById('walletModal');
+            modal.classList.add('active');
+            
+            // Populate modal with wallet data
+            populateWalletModal(wallet);
+            
+            // Fetch detailed data from API
+            try {
+                const response = await fetch(`${API_BASE_URL}/wallets/${address}`);
+                if (response.ok) {
+                    const detailedWallet = await response.json();
+                    populateWalletModal(detailedWallet);
+                }
+            } catch (error) {
+                console.error('Error fetching detailed wallet data:', error);
+            }
+        }
+
+        // Populate wallet modal with data
+        function populateWalletModal(wallet) {
+            // Basic info
+            document.getElementById('modalName').textContent = wallet.name;
+            document.getElementById('modalAddress').textContent = wallet.address;
+            document.getElementById('modalAvatar').textContent = wallet.name.charAt(0).toUpperCase();
+            
+            // Stats
+            document.getElementById('modalScore').textContent = wallet.score?.toLocaleString() || '0';
+            document.getElementById('modalTotalValue').textContent = formatCurrency(wallet.totalValue || 0);
+            document.getElementById('modalTotalPnL').textContent = formatCurrency(wallet.totalPnL || 0);
+            
+            const pnlPercentage = wallet.totalValue > 0 ? (wallet.totalPnL / wallet.totalValue) * 100 : 0;
+            document.getElementById('modalPnLPercentage').textContent = formatPercentage(pnlPercentage);
+            
+            // Additional stats
+            document.getElementById('modalWinRate').textContent = ((wallet.winRate || 0) * 100).toFixed(1) + '%';
+            document.getElementById('modalRiskScore').textContent = (wallet.riskScore || 0).toFixed(1);
+            document.getElementById('modalSharpeRatio').textContent = (wallet.sharpeRatio || 0).toFixed(2);
+            document.getElementById('modalTransactions').textContent = wallet.transactions || 0;
+            document.getElementById('modalFollowers').textContent = wallet.followers || 0;
+            document.getElementById('modalComments').textContent = wallet.comments || 0;
+            
+            // Performance metrics
+            document.getElementById('modalMaxDrawdown').textContent = (wallet.portfolio?.maxDrawdown || 0).toFixed(1) + '%';
+            document.getElementById('modalAvgTradeSize').textContent = formatCurrency(wallet.portfolio?.avgTradeSize || 0);
+            document.getElementById('modalPositionsCount').textContent = wallet.portfolio?.positionsCount || 0;
+            document.getElementById('modalLastUpdated').textContent = wallet.lastUpdated ? 
+                new Date(wallet.lastUpdated).toLocaleString() : 'Never';
+            
+            // Get assets from portfolio or wallet directly, with fallback
+            const assets = wallet.portfolio?.assets || wallet.assets || [];
+            console.log('Modal assets data:', assets);
+            
+            // Populate assets list
+            populateAssetsList(assets);
+            
+            // Populate transactions list
+            populateTransactionsList(wallet.portfolio?.rawData?.transactions || []);
+            
+            // Update portfolio chart
+            updateModalPortfolioChart(assets);
+            
+            // Update performance chart
+            updateModalPerformanceChart(wallet);
+        }
+        
+        // Populate assets list
+        function populateAssetsList(assets) {
+            const container = document.getElementById('modalAssetsList');
+            
+            if (!assets || assets.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--gray-light);">
+                        <i class="fas fa-coins" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>No assets found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            console.log('Modal assets data:', assets);
+            
+            container.innerHTML = assets.map(asset => `
+                <div class="modal-asset-item">
+                    <div class="modal-asset-info">
+                        <div class="modal-asset-icon">${asset.symbol?.charAt(0) || '?'}</div>
+                        <div class="modal-asset-details">
+                            <h4>${asset.symbol || 'Unknown'}</h4>
+                            <p>${asset.name || 'Unknown Token'}</p>
+                        </div>
+                    </div>
+                    <div class="modal-asset-value">
+                        <div class="modal-asset-value-amount">${formatCurrency(asset.value || 0)}</div>
+                        <div class="modal-asset-value-percent">${(asset.percentage || 0).toFixed(1)}%</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Populate transactions list
+        function populateTransactionsList(transactions) {
+            const container = document.getElementById('modalTransactionsList');
+            
+            if (!transactions || transactions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--gray-light);">
+                        <i class="fas fa-exchange-alt" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>No transactions found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = transactions.slice(0, 10).map(tx => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <div>
+                        <div style="font-weight: 600; color: var(--white);">${tx.attributes?.operation_type || 'Transaction'}</div>
+                        <div style="font-size: 0.875rem; color: var(--gray-light);">
+                            ${tx.attributes?.timestamp ? new Date(tx.attributes.timestamp).toLocaleString() : 'Unknown time'}
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 600; color: var(--white);">
+                            ${tx.attributes?.value_usd ? formatCurrency(tx.attributes.value_usd) : 'N/A'}
+                        </div>
+                        <div style="font-size: 0.875rem; color: var(--gray-light);">
+                            ${tx.attributes?.chain_id || 'Unknown chain'}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Update modal portfolio chart
+        function updateModalPortfolioChart(assets) {
+            const ctx = document.getElementById('modalPortfolioChart');
+            if (!ctx) return;
+            
+            const chart = new Chart(ctx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: assets.map(a => a.symbol || 'Unknown'),
+                    datasets: [{
+                        data: assets.map(a => a.percentage || 0),
+                        backgroundColor: [
+                            'rgb(99, 102, 241)',
+                            'rgb(245, 158, 11)',
+                            'rgb(16, 185, 129)',
+                            'rgb(139, 92, 246)',
+                            'rgb(236, 72, 153)',
+                            'rgb(14, 165, 233)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff',
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update modal performance chart
+        function updateModalPerformanceChart(wallet) {
+            const ctx = document.getElementById('modalPerformanceChart');
+            if (!ctx) return;
+            
+            // Generate sample performance data
+            const labels = ['1M', '2M', '3M', '4M', '5M', '6M'];
+            const data = labels.map(() => 100 + (Math.random() - 0.5) * 20);
+            
+            const chart = new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Portfolio Performance',
+                        data: data,
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#ffffff' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Close wallet modal
+        function closeWalletModal() {
+            const modal = document.getElementById('walletModal');
+            modal.classList.remove('active');
+        }
+        
+        // Switch modal tab
+        function switchModalTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.modal-tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.modal-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+        }
+        
+        // Join tournament
+        function joinTournament(tournamentId) {
+            alert(`Joining tournament ${tournamentId}...\n\nThis would connect your wallet and add you to the tournament in the full application.`);
+        }
+
+        // Show create tournament modal
+        function showCreateTournament() {
+            alert('Create Tournament Modal\n\nThis would open a form to create new tournaments with custom rules, prizes, and duration in the full application.');
+        }
+        
+        // Enhanced Analytics Functions
+        function updateAnalyticsDisplay() {
+            // Update analytics stats
+            const totalTrades = leaderboard.reduce((sum, w) => sum + (w.transactions || 0), 0);
+            const avgWinRate = leaderboard.length > 0 ? 
+                leaderboard.reduce((sum, w) => sum + (w.winRate || 0), 0) / leaderboard.length * 100 : 0;
+            const totalVolume = leaderboard.reduce((sum, w) => sum + (w.totalValue || 0), 0);
+            const avgRiskScore = leaderboard.length > 0 ? 
+                leaderboard.reduce((sum, w) => sum + (w.riskScore || 0), 0) / leaderboard.length : 0;
+            const avgSharpeRatio = leaderboard.length > 0 ?
+                leaderboard.reduce((sum, w) => sum + (w.sharpeRatio || 0), 0) / leaderboard.length : 0;
+
+            document.getElementById('totalTrades').textContent = totalTrades.toLocaleString();
+            document.getElementById('avgWinRate').textContent = avgWinRate.toFixed(1) + '%';
+            document.getElementById('totalVolume').textContent = formatCurrency(totalVolume);
+            document.getElementById('avgRiskScore').textContent = avgRiskScore.toFixed(1);
+            document.getElementById('totalWalletsAnalytics').textContent = leaderboard.length;
+            document.getElementById('avgSharpeRatio').textContent = avgSharpeRatio.toFixed(2);
+
+            // Update detailed metrics table
+            document.getElementById('metricTotalValue').textContent = formatCurrency(totalVolume);
+            document.getElementById('metricAvgPnL').textContent = avgWinRate.toFixed(1) + '%';
+            document.getElementById('metricMaxDrawdown').textContent = avgRiskScore.toFixed(1) + '%';
+            document.getElementById('metricSharpeRatio').textContent = avgSharpeRatio.toFixed(2);
+            document.getElementById('metricVolatility').textContent = (avgRiskScore * 0.8).toFixed(1) + '%';
+
+            // Update charts
+            updatePerformanceChart();
+            updateAssetChart();
+            updateRiskReturnChart();
+            updateHeatmapChart();
+            updateTopAssetsList();
+        }
+        
+        // Update Homepage Stats
+        function updateHomepageStats() {
+            const totalPortfolioValue = leaderboard.reduce((sum, w) => sum + (w.totalValue || 0), 0);
+            const activeTraders = leaderboard.length;
+            const totalTrades = leaderboard.reduce((sum, w) => sum + (w.transactions || 0), 0);
+            const avgWinRate = leaderboard.length > 0 ? 
+                leaderboard.reduce((sum, w) => sum + (w.winRate || 0), 0) / leaderboard.length * 100 : 0;
+            const totalPnL = leaderboard.reduce((sum, w) => sum + (w.totalPnL || 0), 0);
+            const totalPositions = leaderboard.reduce((sum, w) => sum + (w.portfolio?.positionsCount || 0), 0);
+            const liveWallets = leaderboard.filter(w => w.isRealData).length;
+            const avgPortfolioValue = activeTraders > 0 ? totalPortfolioValue / activeTraders : 0;
+            
+            document.getElementById('totalPortfolioValue').textContent = formatCurrency(totalPortfolioValue);
+            document.getElementById('activeTraders').textContent = activeTraders.toLocaleString();
+            document.getElementById('totalTrades').textContent = totalTrades.toLocaleString();
+            document.getElementById('avgWinRate').textContent = avgWinRate.toFixed(1) + '%';
+            document.getElementById('totalPnL').textContent = formatCurrency(totalPnL);
+            document.getElementById('totalPositions').textContent = totalPositions.toLocaleString();
+            const liveWalletsEl = document.getElementById('liveWallets');
+            if (liveWalletsEl) liveWalletsEl.textContent = liveWallets.toLocaleString();
+            const avgPortfolioEl = document.getElementById('avgPortfolioValue');
+            if (avgPortfolioEl) avgPortfolioEl.textContent = formatCurrency(avgPortfolioValue);
+            
+            // Update change indicators with some variation
+            const pnlPercentage = totalPortfolioValue > 0 ? (totalPnL / totalPortfolioValue) * 100 : 0;
+            document.getElementById('pnlChange').textContent = (pnlPercentage >= 0 ? '+' : '') + pnlPercentage.toFixed(1) + '%';
+            document.getElementById('pnlChange').style.color = pnlPercentage >= 0 ? 'var(--success)' : 'var(--error)';
+            const liveChangeEl = document.getElementById('liveWalletsChange');
+            if (liveChangeEl) liveChangeEl.textContent = '+' + Math.max(0, Math.round((Math.random() * 2))).toString();
+            const avgPortChangeEl = document.getElementById('avgPortfolioChange');
+            if (avgPortChangeEl) avgPortChangeEl.textContent = '+0%';
+            
+            // Update top performers preview
+            updateTopPerformersPreview();
+        }
+        
+        // Update Top Performers Preview
+        function updateTopPerformersPreview() {
+            const container = document.getElementById('topPerformersPreview');
+            if (!container) return;
+            
+            const topPerformers = leaderboard.slice(0, 5);
+            
+            if (topPerformers.length === 0) {
+                container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+                return;
+            }
+            
+            container.innerHTML = topPerformers.map((wallet, index) => `
+                <div class="leaderboard-item" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; margin-bottom: 0.5rem; background: var(--glass); border-radius: 8px; border: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="rank" style="font-weight: 700; color: var(--primary); min-width: 2rem;">#${index + 1}</div>
+                        <div class="activity-avatar">${wallet.name.charAt(0).toUpperCase()}</div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--white);">${wallet.name}</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-light);">${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 600; color: var(--white);">${formatCurrency(wallet.totalValue || 0)}</div>
+                        <div style="font-size: 0.875rem; color: ${(wallet.totalPnL || 0) >= 0 ? 'var(--success)' : 'var(--error)'};">
+                            ${formatCurrency(wallet.totalPnL || 0)}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Update Tournament Stats
+        function updateTournamentStats() {
+            const activeTournaments = Math.floor(Math.random() * 5) + 3; // 3-7 tournaments
+            const totalParticipants = leaderboard.length * 2; // Assume 2x participation
+            const totalPrizePool = leaderboard.reduce((sum, w) => sum + (w.totalValue || 0), 0) * 0.01; // 1% of total portfolio value
+            const avgDuration = Math.floor(Math.random() * 48) + 24; // 24-72 hours
+            
+            document.getElementById('activeTournaments').textContent = activeTournaments;
+            document.getElementById('totalParticipants').textContent = totalParticipants.toLocaleString();
+            document.getElementById('totalPrizePool').textContent = formatCurrency(totalPrizePool);
+            document.getElementById('avgTournamentDuration').textContent = avgDuration + 'h';
+            
+            // Update category stats
+            document.getElementById('dailyBattles').textContent = Math.floor(activeTournaments * 0.6);
+            document.getElementById('weeklyChampionships').textContent = Math.floor(activeTournaments * 0.3);
+            document.getElementById('monthlyMasters').textContent = Math.floor(activeTournaments * 0.1);
+        }
+        
+        // Update Community Stats
+        function updateCommunityStats() {
+            const totalUsers = leaderboard.length;
+            const totalComments = leaderboard.reduce((sum, w) => sum + (w.comments || 0), 0);
+            const totalFollows = leaderboard.reduce((sum, w) => sum + (w.followers || 0), 0);
+            const totalTournaments = Math.floor(Math.random() * 10) + 5;
+            const totalLikes = totalComments * 3; // Assume 3 likes per comment
+            const activeNow = Math.floor(totalUsers * 0.3); // 30% online
+            
+            document.getElementById('totalUsers').textContent = totalUsers.toLocaleString();
+            document.getElementById('totalComments').textContent = totalComments.toLocaleString();
+            document.getElementById('totalFollows').textContent = totalFollows.toLocaleString();
+            document.getElementById('totalTournaments').textContent = totalTournaments.toLocaleString();
+            document.getElementById('totalLikes').textContent = totalLikes.toLocaleString();
+            document.getElementById('activeNow').textContent = activeNow.toLocaleString();
+        }
+        
+        function updateHeatmapChart() {
+            const ctx = document.getElementById('heatmapChart');
+            if (!ctx) return;
+            
+            // Generate sample heatmap data
+            const hours = ['00', '02', '04', '06', '08', '10', '12', '14', '16', '18', '20', '22'];
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            
+            const data = [];
+            for (let d = 0; d < 7; d++) {
+                for (let h = 0; h < 12; h++) {
+                    data.push({
+                        x: h * 2,
+                        y: d,
+                        v: Math.random() * 100
+                    });
+                }
+            }
+            
+            const chart = new Chart(ctx.getContext('2d'), {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Trading Activity',
+                        data: data,
+                        backgroundColor: data.map(d => {
+                            const intensity = d.v / 100;
+                            return `rgba(16, 185, 129, ${intensity})`;
+                        }),
+                        borderColor: 'rgba(16, 185, 129, 0.8)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Hour of Day',
+                                color: '#ffffff'
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#ffffff' }
+                        },
+                        y: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Day of Week',
+                                color: '#ffffff'
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { 
+                                color: '#ffffff',
+                                callback: function(value) {
+                                    return days[value] || '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateTopAssetsList() {
+            const container = document.getElementById('topAssetsList');
+            
+            // Get all assets from all wallets
+            const allAssets = {};
+            leaderboard.forEach(wallet => {
+                if (wallet.portfolio?.assets) {
+                    wallet.portfolio.assets.forEach(asset => {
+                        if (allAssets[asset.symbol]) {
+                            allAssets[asset.symbol].totalValue += asset.value || 0;
+                            allAssets[asset.symbol].count += 1;
+                        } else {
+                            allAssets[asset.symbol] = {
+                                symbol: asset.symbol,
+                                name: asset.name,
+                                totalValue: asset.value || 0,
+                                count: 1
+                            };
+                        }
+                    });
+                }
+            });
+            
+            const sortedAssets = Object.values(allAssets)
+                .sort((a, b) => b.totalValue - a.totalValue)
+                .slice(0, 5);
+            
+            if (sortedAssets.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--gray-light);">
+                        <i class="fas fa-coins" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>No assets data available</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = sortedAssets.map((asset, index) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--white);">
+                            ${index + 1}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--white);">${asset.symbol}</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-light);">${asset.name}</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 700; color: var(--white);">${formatCurrency(asset.totalValue)}</div>
+                        <div style="font-size: 0.875rem; color: var(--gray-light);">${asset.count} wallets</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function exportAnalytics() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                totalTrades: leaderboard.reduce((sum, w) => sum + (w.transactions || 0), 0),
+                totalVolume: leaderboard.reduce((sum, w) => sum + (w.totalValue || 0), 0),
+                averageWinRate: leaderboard.length > 0 ? 
+                    leaderboard.reduce((sum, w) => sum + (w.winRate || 0), 0) / leaderboard.length * 100 : 0,
+                averageRiskScore: leaderboard.length > 0 ? 
+                    leaderboard.reduce((sum, w) => sum + (w.riskScore || 0), 0) / leaderboard.length : 0,
+                wallets: leaderboard.length,
+                walletsData: leaderboard.map(w => ({
+                    name: w.name,
+                    address: w.address,
+                    score: w.score,
+                    totalValue: w.totalValue,
+                    totalPnL: w.totalPnL,
+                    isRealData: w.isRealData
+                }))
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `portfolio-analytics-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Enhanced Community Functions
+        function updateCommunityDisplay() {
+            updateActivityFeed();
+            updateTopContributors();
+            updateTrendingTopics();
+            updateCommunityPosts();
+            updateCommunityLeaderboard();
+        }
+        
+        function updateTrendingTopics() {
+            const container = document.getElementById('trendingTopics');
+            const topics = [
+                { name: 'DeFi Strategies', posts: 24, trend: 'up' },
+                { name: 'Yield Farming', posts: 18, trend: 'up' },
+                { name: 'NFT Trading', posts: 15, trend: 'down' },
+                { name: 'Layer 2 Solutions', posts: 12, trend: 'up' },
+                { name: 'Portfolio Management', posts: 9, trend: 'stable' }
+            ];
+            
+            container.innerHTML = topics.map(topic => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--glass-border);">
+                    <div>
+                        <div style="font-weight: 600; color: var(--white);">${topic.name}</div>
+                        <div style="font-size: 0.875rem; color: var(--gray-light);">${topic.posts} posts</div>
+                    </div>
+                    <div style="color: ${topic.trend === 'up' ? 'var(--success)' : topic.trend === 'down' ? 'var(--danger)' : 'var(--gray-light)'};">
+                        <i class="fas fa-arrow-${topic.trend === 'up' ? 'up' : topic.trend === 'down' ? 'down' : 'minus'}"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateCommunityPosts() {
+            const container = document.getElementById('communityPosts');
+            const posts = [
+                {
+                    author: 'CryptoWhale',
+                    title: 'Advanced DeFi Strategy: Maximizing Yield with Compound',
+                    content: 'Here\'s how I\'ve been achieving 12% APY using a combination of...',
+                    likes: 24,
+                    comments: 8,
+                    time: '2 hours ago',
+                    type: 'strategy'
+                },
+                {
+                    author: 'DeFiTrader',
+                    title: 'Market Analysis: ETH Breaking Resistance',
+                    content: 'Based on technical analysis, ETH is showing strong bullish signals...',
+                    likes: 18,
+                    comments: 12,
+                    time: '4 hours ago',
+                    type: 'news'
+                },
+                {
+                    author: 'NewbieTrader',
+                    title: 'Question: Best Portfolio Allocation Strategy?',
+                    content: 'I\'m new to crypto trading and wondering what the optimal...',
+                    likes: 6,
+                    comments: 15,
+                    time: '6 hours ago',
+                    type: 'question'
+                }
+            ];
+            
+            container.innerHTML = posts.map(post => `
+                <div style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="activity-avatar">${post.author.charAt(0)}</div>
+                            <div>
+                                <div style="font-weight: 600; color: var(--white);">${post.author}</div>
+                                <div style="font-size: 0.875rem; color: var(--gray-light);">${post.time}</div>
+                            </div>
+                        </div>
+                        <span style="padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; background: var(--glass); color: var(--gray-light);">
+                            ${post.type}
+                        </span>
+                    </div>
+                    <h4 style="color: var(--white); margin-bottom: 0.5rem;">${post.title}</h4>
+                    <p style="color: var(--gray-light); margin-bottom: 1rem;">${post.content}</p>
+                    <div style="display: flex; gap: 2rem; color: var(--gray-light); font-size: 0.875rem;">
+                        <span><i class="fas fa-heart"></i> ${post.likes}</span>
+                        <span><i class="fas fa-comment"></i> ${post.comments}</span>
+                        <span><i class="fas fa-share"></i> Share</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateCommunityLeaderboard() {
+            const container = document.getElementById('communityLeaderboard');
+            const contributors = leaderboard.slice(0, 10).map((wallet, index) => ({
+                ...wallet,
+                communityScore: (wallet.score || 0) + (wallet.followers || 0) * 2 + (wallet.comments || 0) * 5
+            })).sort((a, b) => b.communityScore - a.communityScore);
+            
+            container.innerHTML = contributors.map((wallet, index) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--white);">
+                            ${index + 1}
+                        </div>
+                        <div class="activity-avatar">${wallet.name.charAt(0)}</div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--white);">${wallet.name}</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-light);">
+                                ${wallet.followers || 0} followers • ${wallet.comments || 0} comments
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 700; color: var(--primary);">${wallet.communityScore}</div>
+                        <div style="font-size: 0.875rem; color: var(--gray-light);">community pts</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Community action functions
+        function showCreatePost() {
+            alert('Create Post Modal\n\nThis would open a form to create community posts with different categories (strategy, news, question).');
+        }
+        
+        function showLeaderboard() {
+            showPage('leaderboard');
+        }
+        
+        function showAnalytics() {
+            showPage('analytics');
+        }
+        
+        function refreshContributors() {
+            updateTopContributors();
+        }
+        
+        function filterPosts(type) {
+            // This would filter posts by type in a real implementation
+            console.log(`Filtering posts by: ${type}`);
+        }
+        
+        function followWallet() {
+            alert('Follow functionality\n\nThis would add/remove the wallet from your following list.');
+        }
+        
+        function showCommentForm() {
+            alert('Comment Form\n\nThis would open a form to add comments to the wallet profile.');
+        }
+        
+        // Wallet Analysis Functions
+        async function analyzeWallet() {
+            const address = document.getElementById('walletSearch').value.trim();
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const resultDiv = document.getElementById('walletAnalysisResult');
+            
+            if (!address) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Please enter a wallet address
+                    </div>
+                `;
+                return;
+            }
+            
+            if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Please enter a valid Ethereum address
+                    </div>
+                `;
+                return;
+            }
+            
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/wallets/${address}`);
+                if (response.ok) {
+                    const wallet = await response.json();
+                    displayWalletAnalysis(wallet);
+                } else {
+                    // Try to add the wallet first
+                    const addResponse = await fetch(`${API_BASE_URL}/wallets`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            address: address, 
+                            name: `Wallet ${address.slice(0, 6)}...${address.slice(-4)}` 
+                        })
+                    });
+                    
+                    if (addResponse.ok) {
+                        const wallet = await addResponse.json();
+                        displayWalletAnalysis(wallet);
+                    } else {
+                        throw new Error('Wallet not found and could not be added');
+                    }
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Error analyzing wallet: ${error.message}
+                    </div>
+                `;
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '<i class="fas fa-chart-line"></i> Analyze Portfolio';
+            }
+        }
+        
+        function displayWalletAnalysis(wallet) {
+            const resultDiv = document.getElementById('walletAnalysisResult');
+            const pnlPercentage = wallet.totalValue > 0 ? (wallet.totalPnL / wallet.totalValue) * 100 : 0;
+            
+            // Get assets from portfolio or wallet directly
+            const assets = wallet.portfolio?.assets || wallet.assets || [];
+            console.log('Analytics assets data:', assets);
+            
+            resultDiv.innerHTML = `
+                <div class="card" style="margin-top: 1rem;">
+                    <div class="card-header">
+                        <h4 class="card-title">Analysis Results for ${wallet.name}</h4>
+                        <div class="status-indicator">
+                            <div class="status-dot" style="background: ${wallet.isRealData ? '#10b981' : '#f59e0b'};"></div>
+                            <span>${wallet.isRealData ? 'Live Data' : 'Mock Data'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3" style="margin-bottom: 1.5rem;">
+                        <div class="stat-card" style="text-align: center;">
+                            <div class="stat-value">${formatCurrency(wallet.totalValue || 0)}</div>
+                            <div class="stat-label">Portfolio Value</div>
+                        </div>
+                        <div class="stat-card" style="text-align: center;">
+                            <div class="stat-value" style="color: ${pnlPercentage >= 0 ? '#10b981' : '#ef4444'};">
+                                ${formatCurrency(wallet.totalPnL || 0)}
+                            </div>
+                            <div class="stat-label">Total PnL</div>
+                        </div>
+                        <div class="stat-card" style="text-align: center;">
+                            <div class="stat-value" style="color: ${pnlPercentage >= 0 ? '#10b981' : '#ef4444'};">
+                                ${formatPercentage(pnlPercentage)}
+                            </div>
+                            <div class="stat-label">PnL Percentage</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2" style="gap: 1rem;">
+                        <div>
+                            <h5 style="color: var(--white); margin-bottom: 1rem;">Risk Analysis</h5>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--gray-light);">Risk Score:</span>
+                                <span style="color: var(--white); font-weight: 600;">${(wallet.riskScore || 0).toFixed(1)}/100</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--gray-light);">Sharpe Ratio:</span>
+                                <span style="color: var(--white); font-weight: 600;">${(wallet.sharpeRatio || 0).toFixed(2)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--gray-light);">Max Drawdown:</span>
+                                <span style="color: var(--white); font-weight: 600;">${(wallet.portfolio?.maxDrawdown || 0).toFixed(1)}%</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 style="color: var(--white); margin-bottom: 1rem;">Trading Activity</h5>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--gray-light);">Transactions:</span>
+                                <span style="color: var(--white); font-weight: 600;">${wallet.transactions || 0}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--gray-light);">Win Rate:</span>
+                                <span style="color: var(--white); font-weight: 600;">${((wallet.winRate || 0) * 100).toFixed(1)}%</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--gray-light);">Avg Trade Size:</span>
+                                <span style="color: var(--white); font-weight: 600;">${formatCurrency(wallet.portfolio?.avgTradeSize || 0)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <h5 style="color: var(--white); margin-bottom: 1rem;">Asset Distribution</h5>
+                        <div id="analysisAssetChart" style="height: 200px;">
+                            <canvas id="analysisAssetChartCanvas"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; text-align: center;">
+                        <button class="btn btn-secondary" onclick="viewWalletDetails('${wallet.address}')">
+                            <i class="fas fa-eye"></i>
+                            View Detailed Analysis
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Update the asset chart for this analysis
+            updateAnalysisAssetChart(assets);
+        }
+        
+        function updateAnalysisAssetChart(assets) {
+            const ctx = document.getElementById('analysisAssetChartCanvas');
+            if (!ctx || !assets.length) return;
+            
+            new Chart(ctx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: assets.map(a => a.symbol || 'Unknown'),
+                    datasets: [{
+                        data: assets.map(a => a.percentage || 0),
+                        backgroundColor: [
+                            'rgb(99, 102, 241)',
+                            'rgb(245, 158, 11)',
+                            'rgb(16, 185, 129)',
+                            'rgb(139, 92, 246)',
+                            'rgb(236, 72, 153)',
+                            'rgb(14, 165, 233)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff',
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Chat Functions
+        let chatMessages = [];
+        let onlineUsers = 0;
+        let notificationsEnabled = true;
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const messageObj = {
+                id: Date.now(),
+                author: 'You',
+                message: message,
+                timestamp: new Date(),
+                type: 'user'
+            };
+            
+            addMessageToChat(messageObj);
+            input.value = '';
+            
+            // Simulate other users responding
+            setTimeout(() => {
+                const responses = [
+                    { author: 'CryptoWhale', message: 'Interesting strategy! What about the risk management?' },
+                    { author: 'DeFiTrader', message: 'I\'ve been using a similar approach with Compound.' },
+                    { author: 'NewbieTrader', message: 'Can someone explain yield farming to me?' },
+                    { author: 'PortfolioMaster', message: 'Great analysis! Thanks for sharing.' },
+                    { author: 'RiskManager', message: 'Always remember to diversify your portfolio!' }
+                ];
+                
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                const responseObj = {
+                    id: Date.now() + Math.random(),
+                    author: randomResponse.author,
+                    message: randomResponse.message,
+                    timestamp: new Date(),
+                    type: 'other'
+                };
+                
+                addMessageToChat(responseObj);
+            }, 1000 + Math.random() * 3000);
+        }
+        
+        function addMessageToChat(messageObj) {
+            chatMessages.push(messageObj);
+            const container = document.getElementById('chatMessages');
+            
+            // Clear welcome message if it exists
+            if (container.querySelector('.loading') || container.innerHTML.includes('Welcome to the Portfolio Battle Arena chat!')) {
+                container.innerHTML = '';
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message';
+            messageDiv.style.cssText = `
+                display: flex;
+                align-items: flex-start;
+                gap: 0.75rem;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+                border-radius: 8px;
+                background: ${messageObj.type === 'user' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(255, 255, 255, 0.05)'};
+                border: 1px solid ${messageObj.type === 'user' ? 'rgba(99, 102, 241, 0.3)' : 'var(--glass-border)'};
+            `;
+            
+            messageDiv.innerHTML = `
+                <div class="activity-avatar" style="width: 32px; height: 32px; font-size: 0.875rem;">
+                    ${messageObj.author.charAt(0)}
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                        <span style="font-weight: 600; color: var(--white);">${messageObj.author}</span>
+                        <span style="font-size: 0.75rem; color: var(--gray-light);">
+                            ${messageObj.timestamp.toLocaleTimeString()}
+                        </span>
+                    </div>
+                    <div style="color: var(--gray-light); line-height: 1.4;">${messageObj.message}</div>
+                </div>
+            `;
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+            
+            // Update online count
+            onlineUsers = Math.max(onlineUsers, Math.floor(Math.random() * 20) + 5);
+            document.getElementById('onlineCount').textContent = `${onlineUsers} users online`;
+        }
+        
+        function clearChat() {
+            chatMessages = [];
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = `
+                <div style="text-align: center; color: var(--gray-light); padding: 2rem;">
+                    <i class="fas fa-comments" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>Chat cleared. Start a new conversation!</p>
+                </div>
+            `;
+        }
+        
+        function toggleNotifications() {
+            notificationsEnabled = !notificationsEnabled;
+            const btn = event.target;
+            btn.innerHTML = `<i class="fas fa-bell${notificationsEnabled ? '' : '-slash'}"></i> ${notificationsEnabled ? 'Notifications On' : 'Notifications Off'}`;
+        }
+        
+        // Allow Enter key to send message
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+            }
+        });
+
+        // Social Features
+        function showCreatePost() {
+            alert('🚀 Coming Soon!\n\nShare your trading strategies, portfolio insights, and DeFi discoveries with the community. This feature will allow you to create posts with embedded portfolio data from Zerion API.');
+        }
+
+        function showCreateTournament() {
+            alert('🏆 Coming Soon!\n\nCreate custom tournaments and competitions for the community. Set rules, prizes, and timeframes for exciting trading battles.');
+        }
+
+        function showExploreTraders() {
+            alert('👥 Coming Soon!\n\nExplore and follow top traders, discover new strategies, and connect with like-minded DeFi enthusiasts.');
+        }
+
+        function showCommunityGuidelines() {
+            alert('📋 Community Guidelines\n\n1. Be respectful and constructive\n2. Share valuable insights and strategies\n3. Help newcomers learn about DeFi\n4. Report inappropriate content\n5. Follow trading best practices');
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => messageDiv.innerHTML = '', 5000);
+        }
+
+        // Show error message
+        function showError(message) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => messageDiv.innerHTML = '', 5000);
+        }
+
+        // Poll for updates every 30 seconds
+        setInterval(async () => {
+            await fetchLeaderboard();
+            await fetchTournaments();
+            updateStats();
+            updateCommunityStats();
+        }, 30000);
+    </script>
+    </main>
+
+    <!-- Wallet Details Modal -->
+    <div class="modal-overlay" id="walletModal">
+        <div class="wallet-modal">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <div class="modal-avatar" id="modalAvatar">T</div>
+                    <div class="modal-title-info">
+                        <h2 id="modalName">Wallet Name</h2>
+                        <p id="modalAddress">0x...</p>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeWalletModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="modal-tabs">
+                    <button class="modal-tab active" onclick="switchModalTab('overview')">Overview</button>
+                    <button class="modal-tab" onclick="switchModalTab('assets')">Assets</button>
+                    <button class="modal-tab" onclick="switchModalTab('performance')">Performance</button>
+                    <button class="modal-tab" onclick="switchModalTab('transactions')">Transactions</button>
+                    <button class="modal-tab" onclick="switchModalTab('social')">Social</button>
+                </div>
+
+                <!-- Overview Tab -->
+                <div class="modal-tab-content active" id="tab-overview">
+                    <div class="modal-stats-grid">
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Battle Score</div>
+                            <div class="modal-stat-value" id="modalScore">0</div>
+                        </div>
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Portfolio Value</div>
+                            <div class="modal-stat-value" id="modalTotalValue">$0</div>
+                        </div>
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Total PnL</div>
+                            <div class="modal-stat-value" id="modalTotalPnL">$0</div>
+                        </div>
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">PnL Percentage</div>
+                            <div class="modal-stat-value" id="modalPnLPercentage">0%</div>
+                        </div>
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Win Rate</div>
+                            <div class="modal-stat-value" id="modalWinRate">0%</div>
+                        </div>
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Risk Score</div>
+                            <div class="modal-stat-value" id="modalRiskScore">0</div>
+                        </div>
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Sharpe Ratio</div>
+                            <div class="modal-stat-value" id="modalSharpeRatio">0</div>
+                        </div>
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Transactions</div>
+                            <div class="modal-stat-value" id="modalTransactions">0</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title" style="margin-bottom: 1rem;">Portfolio Breakdown</h3>
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="modalPortfolioChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assets Tab -->
+                <div class="modal-tab-content" id="tab-assets">
+                    <div class="modal-assets-list" id="modalAssetsList">
+                        <div class="modal-loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Tab -->
+                <div class="modal-tab-content" id="tab-performance">
+                    <div class="card">
+                        <h3 class="card-title" style="margin-bottom: 1rem;">Performance Metrics</h3>
+                        <div class="chart-container" style="height: 300px;">
+                            <canvas id="modalPerformanceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="modal-stats-grid" style="margin-top: 1.5rem;">
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Max Drawdown</div>
+                            <div class="modal-stat-value" id="modalMaxDrawdown">0%</div>
+                        </div>
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Avg Trade Size</div>
+                            <div class="modal-stat-value" id="modalAvgTradeSize">$0</div>
+                        </div>
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Positions Count</div>
+                            <div class="modal-stat-value" id="modalPositionsCount">0</div>
+                        </div>
+                        <div class="modal-stat">
+                            <div class="modal-stat-label">Last Updated</div>
+                            <div class="modal-stat-value" id="modalLastUpdated" style="font-size: 1rem;">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div class="modal-tab-content" id="tab-transactions">
+                    <div class="card">
+                        <h3 class="card-title" style="margin-bottom: 1rem;">Transaction History</h3>
+                        <div id="modalTransactionsList">
+                            <div class="modal-loading">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Tab -->
+                <div class="modal-tab-content" id="tab-social">
+                    <div class="grid grid-cols-2">
+                        <div class="card">
+                            <h3 class="card-title" style="margin-bottom: 1rem;">Followers</h3>
+                            <div class="stat-value" id="modalFollowers">0</div>
+                            <button class="btn btn-secondary" style="margin-top: 1rem; width: 100%;" onclick="followWallet()">
+                                <i class="fas fa-user-plus"></i> Follow
+                            </button>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title" style="margin-bottom: 1rem;">Comments</h3>
+                            <div class="stat-value" id="modalComments">0</div>
+                            <button class="btn btn-secondary" style="margin-top: 1rem; width: 100%;" onclick="showCommentForm()">
+                                <i class="fas fa-comment"></i> Add Comment
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 1.5rem;">
+                        <h3 class="card-title" style="margin-bottom: 1rem;">Recent Comments</h3>
+                        <div id="modalCommentsList">
+                            <p style="color: var(--gray-light); text-align: center; padding: 2rem;">No comments yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-trophy"></i>
+                        Portfolio Battle Arena
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-text">
+                        <i class="fas fa-link"></i>
+                        <span>Powered by <a href="https://developers.zerion.io/" target="_blank" rel="noopener noreferrer" class="footer-link">Zerion API</a> - Real-time portfolio data across 55+ blockchains</span>
+                    </div>
+                    <div class="footer-text" style="margin-top: 0.5rem;">
+                        <i class="fas fa-download"></i>
+                        <span>Download Zerion: <a href="https://link.zerion.io/referral?code=EARNXZERION" target="_blank" rel="noopener noreferrer" class="footer-link">Get the App</a></span>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-text">
+                        <i class="fas fa-database"></i>
+                        <span>Using real Zerion data from 55+ blockchains</span>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border); text-align: center;">
+                <p style="color: var(--gray-light); font-size: 0.75rem; margin: 0;">
+                    Built for Cypherpunk Hackathon • Portfolio data provided by <a href="https://zerion.io/" target="_blank" rel="noopener noreferrer" class="footer-link">Zerion</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
