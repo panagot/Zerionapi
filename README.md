@@ -6,11 +6,6 @@
 ![Live Data](https://img.shields.io/badge/Live%20Data-55%2B%20Chains-green?style=for-the-badge)
 ![Hackathon](https://img.shields.io/badge/Hackathon-Zerion%20x%20Cypherpunk-purple?style=for-the-badge)
 
-## 🚀 Live Demo
-**Coming Soon** - Deploying to Vercel
-
-## 🎥 Demo Video
-**Coming Soon** - 3-4 minute showcase video
 
 ## ✨ Features
 
