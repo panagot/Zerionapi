@@ -12,8 +12,8 @@
     "server-mock": "nodemon server-mock.js",
     "server-pro": "nodemon server-professional.js",
     "server-hybrid": "nodemon server-hybrid.js",
-    "client": "cd client && npm start",
-    "build": "cd client && npm run build",
+    "client": "echo 'no client app'",
+    "build": "echo 'no build step - static site'",
     "start": "node server.js",
     "install-all": "npm install && cd client && npm install"
   },
