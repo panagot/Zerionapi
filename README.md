@@ -155,21 +155,70 @@ This isn't just another portfolio tracker - it's a **social gaming platform** th
 - **Discover** - Find new opportunities across 55+ chains
 - **Track** - Monitor performance with advanced analytics
 
-## 🔧 Development
+## 🚀 Getting Started
 
-### Project Structure
+### Prerequisites
+- **Node.js** (v16 or higher)
+- **npm** (v8 or higher)
+- **Zerion API Key** (Get free key at [zerion.io](https://zerion.io))
+
+### Quick Start
+
+1. **Fork & Clone**
+   ```bash
+   git clone https://github.com/panagot/Zerionapi.git
+   cd Zerionapi
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set Up Environment**
+   ```bash
+   # Create .env file
+   echo "ZERION_API_KEY=your_api_key_here" > .env
+   ```
+
+4. **Start the Application**
+   ```bash
+   # Start the server
+   npm run server-hybrid
+   
+   # In another terminal, serve the frontend
+   python -m http.server 3000
+   # OR use any static file server
+   ```
+
+5. **Open in Browser**
+   ```
+   http://localhost:3000
+   ```
+
+### 🔧 Development
+
+#### Project Structure
 ```
 ├── index.html              # Main frontend application
 ├── server-hybrid.js        # Backend server with Zerion API
 ├── package.json           # Dependencies and scripts
-├── .env                   # Environment variables
+├── .env                   # Environment variables (create this)
 └── README.md              # This file
 ```
 
-### Available Scripts
+#### Available Scripts
 ```bash
-npm run server-hybrid      # Start hybrid server (Zerion API + Zerion API data)
+npm run server-hybrid      # Start hybrid server (Zerion API + enhanced data)
 npm run dev-hybrid         # Start with nodemon for development
+npm start                  # Start production server
+```
+
+#### Environment Variables
+Create a `.env` file in the root directory:
+```env
+ZERION_API_KEY=your_zerion_api_key_here
+PORT=5000
 ```
 
 ## 📈 Future Roadmap
