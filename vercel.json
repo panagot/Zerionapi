@@ -1,17 +1,6 @@
-{
-  "version": 2,
-  "builds": [
-    { "src": "api/**/*.{js,ts}", "use": "@vercel/node" },
-    { "src": "web/package.json", "use": "@vercel/static-build", "config": { "distDir": "web/dist" } }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/web/$1" }
-  ],
-  "framework": null,
-  "env": {
-    "ZERION_API_KEY": "@zerion_api_key"
-  }
+﻿{
+  "buildCommand": "npm run build",
+  "installCommand": "npm ci",
+  "outputDirectory": "dist",
+  "framework": "vite"
 }
-
-

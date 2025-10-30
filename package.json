@@ -1,42 +1,24 @@
 {
-  "name": "crypto-portfolio-battle-arena",
-  "version": "1.0.0",
-  "description": "A social platform for crypto portfolio battles using Zerion API",
-  "main": "server.js",
+  "name": "portfolio-battle-arena-web",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "dev-pro": "concurrently \"npm run server-pro\" \"npm run client\"",
-    "dev-hybrid": "concurrently \"npm run server-hybrid\" \"npm run client\"",
-    "server": "nodemon server.js",
-    "server-pro": "nodemon server-professional.js",
-    "server-hybrid": "nodemon server-hybrid.js",
-    "client": "echo 'no client app'",
-    "build": "echo 'no build step - static site'",
-    "start": "node server.js",
-    "install-all": "npm install && cd client && npm install"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.6.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "express-rate-limit": "^8.2.0",
-    "mongoose": "^8.0.3",
-    "node-cron": "^3.0.3",
-    "socket.io": "^4.7.4"
+    "@types/react-router-dom": "^5.3.3",
+    "chart.js": "^4.5.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.9.5"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "nodemon": "^3.0.2"
-  },
-  "keywords": [
-    "crypto",
-    "portfolio",
-    "battle",
-    "zerion",
-    "api",
-    "defi"
-  ],
-  "author": "Cypherpunk Hackathon",
-  "license": "MIT"
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.0"
+  }
 }
